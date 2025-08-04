@@ -1,5 +1,6 @@
-import 'package:flutter/foundation.dart';
 
+// Remove or comment out the following line:
+// import 'package:flutter/foundation.dart';
 class League {
   final int id;
   final String name;

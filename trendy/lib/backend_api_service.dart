@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:trendy/models/post.dart';
 
 class BackendApiService {
   static const String _baseUrl =

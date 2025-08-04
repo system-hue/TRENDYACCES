@@ -33,7 +33,7 @@ dependencies:
   http: ^1.4.0
   agora_rtc_engine: ^6.2.2
   permission_handler: ^11.0.0
-  agora_rtm: ^1.6.2
+  agora_rtm: ^1.5.0
   countup: ^0.1.4
   video_player: ^2.4.5
   lottie: ^2.3.2

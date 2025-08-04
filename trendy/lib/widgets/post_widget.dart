@@ -8,12 +8,12 @@ class PostWidget extends StatelessWidget {
     return Card(
       child: Column(
         children: [
-          ListTile(
-            leading: const CircleAvatar(
+          const ListTile(
+            leading: CircleAvatar(
               backgroundImage: NetworkImage('https://i.imgur.com/3oEJMlB.png'),
             ),
-            title: const Text('Username'),
-            subtitle: const Text('Location'),
+            title: Text('Username'),
+            subtitle: Text('Location'),
           ),
           Image.network('https://i.imgur.com/3oEJMlB.png'),
           const Padding(
@@ -27,10 +27,7 @@ class PostWidget extends StatelessWidget {
                 onPressed: () {},
                 icon: const Icon(Icons.favorite_border),
               ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.comment),
-              ),
+              IconButton(onPressed: () {}, icon: const Icon(Icons.comment)),
             ],
           ),
         ],
