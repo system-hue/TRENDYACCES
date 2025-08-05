@@ -33,7 +33,6 @@ dependencies:
   http: ^1.4.0
   agora_rtc_engine: ^6.2.2
   permission_handler: ^11.0.0
-  agora_rtm: ^1.5.0
   countup: ^0.1.4
   video_player: ^2.4.5
   lottie: ^2.3.2
@@ -45,6 +44,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   audioplayers: ^5.2.1
   firebase_core: ^2.32.0
+
+
   firebase_auth: 4.16.0
   cloud_firestore: ^4.17.5
 
