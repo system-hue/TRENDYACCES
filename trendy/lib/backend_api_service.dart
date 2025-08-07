@@ -3,213 +3,193 @@ import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 
 class BackendApiService {
-  static const String _baseUrl =
-      'http://localhost:8000'; // Change this to your backend URL
-  static const String _apiPrefix = '/api';
+  static const String baseUrl = 'http://10.0.2.2:8000'; // Android emulator
+  // static const String baseUrl = 'http://localhost:8000'; // iOS simulator
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  static Future<Map<String, String>> _getHeaders() async {
+    final user = FirebaseAuth.instance.currentUser;
+    String? token;
 
-  // Get the current user's ID token for authentication with backend
-  Future<String?> _getToken() async {
-    final User? user = _auth.currentUser;
     if (user != null) {
-      try {
-        final idToken = await user.getIdToken();
-        return idToken;
-      } catch (e) {
-        print('Error getting ID token: $e');
-        return null;
-      }
-    }
-    return null;
-  }
-
-  // Create authorization header with Firebase ID token
-  Future<Map<String, String>> _getAuthHeaders() async {
-    final token = await _getToken();
-    final headers = <String, String>{'Content-Type': 'application/json'};
-
-    if (token != null) {
-      headers['Authorization'] = 'Bearer $token';
+      token = await user.getIdToken();
     }
 
-    return headers;
+    return {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
   }
 
-  // Posts endpoints
-  Future<List<dynamic>> getPosts() async {
+  // Posts
+  static Future<List<dynamic>> getPosts() async {
     try {
+      final headers = await _getHeaders();
       final response = await http.get(
-        Uri.parse('$_baseUrl$_apiPrefix/posts'),
-        headers: await _getAuthHeaders(),
+        Uri.parse('$baseUrl/api/posts'),
+        headers: headers,
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        return data;
+        return json.decode(response.body);
       } else {
         throw Exception('Failed to load posts: ${response.statusCode}');
       }
     } catch (e) {
       print('Error fetching posts: $e');
-      rethrow;
+      return [];
     }
   }
 
-  Future<dynamic> createPost(Map<String, dynamic> postData) async {
+  static Future<dynamic> createPost(Map<String, dynamic> postData) async {
     try {
+      final headers = await _getHeaders();
       final response = await http.post(
-        Uri.parse('$_baseUrl$_apiPrefix/posts'),
-        headers: await _getAuthHeaders(),
+        Uri.parse('$baseUrl/api/posts'),
+        headers: headers,
         body: json.encode(postData),
       );
 
       if (response.statusCode == 201) {
-        final data = json.decode(response.body);
-        return data;
+        return json.decode(response.body);
       } else {
         throw Exception('Failed to create post: ${response.statusCode}');
       }
     } catch (e) {
       print('Error creating post: $e');
-      rethrow;
+      return null;
     }
   }
 
-  Future<dynamic> getPost(int postId) async {
+  // Music
+  static Future<List<dynamic>> getMusic() async {
     try {
+      final headers = await _getHeaders();
       final response = await http.get(
-        Uri.parse('$_baseUrl$_apiPrefix/posts/$postId'),
-        headers: await _getAuthHeaders(),
+        Uri.parse('$baseUrl/api/music'),
+        headers: headers,
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        return data;
+        return json.decode(response.body);
       } else {
-        throw Exception('Failed to load post: ${response.statusCode}');
+        throw Exception('Failed to load music: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching post: $e');
-      rethrow;
+      print('Error fetching music: $e');
+      return [];
     }
   }
 
-  // Followers endpoints
-  Future<List<dynamic>> getFollowers() async {
+  // Movies
+  static Future<List<dynamic>> getMovies() async {
     try {
+      final headers = await _getHeaders();
       final response = await http.get(
-        Uri.parse('$_baseUrl$_apiPrefix/followers'),
-        headers: await _getAuthHeaders(),
+        Uri.parse('$baseUrl/api/movies'),
+        headers: headers,
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        return data;
+        return json.decode(response.body);
       } else {
-        throw Exception('Failed to load followers: ${response.statusCode}');
+        throw Exception('Failed to load movies: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching followers: $e');
-      rethrow;
+      print('Error fetching movies: $e');
+      return [];
     }
   }
 
-  Future<dynamic> followUser(int userId) async {
+  // Football
+  static Future<List<dynamic>> getFootballData() async {
     try {
-      final response = await http.post(
-        Uri.parse('$_baseUrl$_apiPrefix/followers/$userId'),
-        headers: await _getAuthHeaders(),
-      );
-
-      if (response.statusCode == 201) {
-        final data = json.decode(response.body);
-        return data;
-      } else {
-        throw Exception('Failed to follow user: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error following user: $e');
-      rethrow;
-    }
-  }
-
-  Future<dynamic> unfollowUser(int userId) async {
-    try {
-      final response = await http.delete(
-        Uri.parse('$_baseUrl$_apiPrefix/followers/$userId'),
-        headers: await _getAuthHeaders(),
-      );
-
-      if (response.statusCode == 204) {
-        return true;
-      } else {
-        throw Exception('Failed to unfollow user: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error unfollowing user: $e');
-      rethrow;
-    }
-  }
-
-  // Notifications endpoints
-  Future<List<dynamic>> getNotifications() async {
-    try {
+      final headers = await _getHeaders();
       final response = await http.get(
-        Uri.parse('$_baseUrl$_apiPrefix/notifications'),
-        headers: await _getAuthHeaders(),
+        Uri.parse('$baseUrl/api/football'),
+        headers: headers,
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        return data;
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to load football data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching football data: $e');
+      return [];
+    }
+  }
+
+  // User Profile
+  static Future<dynamic> getUserProfile(String userId) async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/users/$userId'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to load user profile: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching user profile: $e');
+      return null;
+    }
+  }
+
+  // Notifications
+  static Future<List<dynamic>> getNotifications() async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/notifications'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
       } else {
         throw Exception('Failed to load notifications: ${response.statusCode}');
       }
     } catch (e) {
       print('Error fetching notifications: $e');
-      rethrow;
+      return [];
     }
   }
 
-  // User endpoints
-  Future<dynamic> getCurrentUser() async {
+  // Like post
+  static Future<bool> likePost(String postId) async {
     try {
-      final response = await http.get(
-        Uri.parse('$_baseUrl$_apiPrefix/users/me'),
-        headers: await _getAuthHeaders(),
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        return data;
-      } else {
-        throw Exception('Failed to load user: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error fetching user: $e');
-      rethrow;
-    }
-  }
-
-  // AI Moderation endpoints
-  Future<dynamic> moderateContent(Map<String, dynamic> contentData) async {
-    try {
+      final headers = await _getHeaders();
       final response = await http.post(
-        Uri.parse('$_baseUrl$_apiPrefix/ai-moderation/moderate'),
-        headers: await _getAuthHeaders(),
-        body: json.encode(contentData),
+        Uri.parse('$baseUrl/api/posts/$postId/like'),
+        headers: headers,
       );
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        return data;
-      } else {
-        throw Exception('Failed to moderate content: ${response.statusCode}');
-      }
+      return response.statusCode == 200;
     } catch (e) {
-      print('Error moderating content: $e');
-      rethrow;
+      print('Error liking post: $e');
+      return false;
+    }
+  }
+
+  // Comment on post
+  static Future<bool> commentOnPost(String postId, String comment) async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/posts/$postId/comments'),
+        headers: headers,
+        body: json.encode({'content': comment}),
+      );
+
+      return response.statusCode == 201;
+    } catch (e) {
+      print('Error commenting on post: $e');
+      return false;
     }
   }
 }
