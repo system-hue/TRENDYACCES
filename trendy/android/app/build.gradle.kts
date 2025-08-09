@@ -1,15 +1,15 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // Flutter Gradle Plugin must be applied after Android and Kotlin plugins
     id("dev.flutter.flutter-gradle-plugin")
     id("com.google.gms.google-services")
 }
+// Apply the Google Services Gradle plugin to enable Firebase services
 
 android {
-    namespace = "com.example.trendy"
+    namespace = "com.vibe.trendy" // ✅ Must match your Firebase project
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973" // 🔧 Explicit NDK version to avoid mismatch
+    ndkVersion = "27.0.12077973" // Optional: Explicit NDK version for stability
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -17,23 +17,27 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = "11"
     }
 
     defaultConfig {
-        applicationId = "com.vibe.trendy"
-        minSdk = flutter.minSdkVersion
+        applicationId = "com.vibe.trendy" // ✅ Must match Firebase `google-services.json`
+        minSdk = 21 // ✅ Firebase requires at least 21
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        multiDexEnabled = true // ✅ Add this if you get Dex errors with Firebase
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("debug") // 🔐 Change for production
+            signingConfig = signingConfigs.getByName("debug") // 🔐 Change for producti// 🔐 Replace with release signing for production
             isMinifyEnabled = false
             isShrinkResources = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }
