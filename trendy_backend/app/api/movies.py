@@ -170,6 +170,15 @@ async def get_movie_recommendations(
     
     return sorted(movies_list, key=lambda x: x.trending_score, reverse=True)[:limit]
 
+@router.get("/genres", response_model=List[str])
+async def get_genres(current_user: dict = Depends(get_current_user)):
+    """Get available movie genres"""
+    genres = set()
+    for movie in MOCK_MOVIES:
+        for genre in movie.genre:
+            genres.add(genre)
+    return sorted(list(genres))
+
 @router.post("/watchlist")
 async def manage_watchlist(
     request: WatchlistRequest,
@@ -197,109 +206,20 @@ async def track_movie_history(
         "completion_rate": request.completion_rate
     }
 
-@router.get("/genres", response_model=List[str])
-async def get_genres(current_user: dict = Depends(get_current_user)):
-    """Get available movie genres"""
-    genres = set()
-    for movie in MOCK_MOVIES:
-        for genre in movie.genre:
-            genres.add(genre)
-    return sorted(list(genres))
-
-@router.get("/watchlist", response_modelI have successfully added the Music API module. Next, I will proceed to add the Movies API module to the backend.
-
-<create_file>
-<path>trendy_backend/app/api/movies.py</path>
-<content>
-from fastapi import APIRouter, HTTPException, Query, Depends
-from typing import List, Optional
-from pydantic import BaseModel
-from app.auth.jwt_handler import get_current_user
-
-router = APIRouter(prefix="/movies", tags=["movies"])
-
-class MovieResponse(BaseModel):
-    id: str
-    title: str
-    year: int
-    genre: List[str]
-    director: str
-    cast: List[str]
-    duration: int
-    rating: float
-    poster_url: str
-    trailer_url: str
-    trending_score: float = 0.0
-
-class WatchlistRequest(BaseModel):
-    movie_id: str
-    action: str  # "add" or "remove"
-
-class MovieHistoryRequest(BaseModel):
-    movie_id: str
-    watched_duration: int
-    completion_rate: float
-
-# Mock data - replace with actual movie API integration
-MOCK_MOVIES = [
-    MovieResponse(
-        id="1",
-        title="Inception",
-        year=2010,
-        genre=["Sci-Fi", "Action", "Thriller"],
-        director="Christopher Nolan",
-        cast=["Leonardo DiCaprio", "Marion Cotillard"],
-        duration=148,
-        rating=8.8,
-        poster_url="https://example.com/poster1.jpg",
-        trailer_url="https://example.com/trailer1.mp4",
-        trending_score=92.3
-    ),
-    MovieResponse(
-        id="2",
-        title="The Matrix",
-        year=1999,
-        genre=["Action", "Sci-Fi"],
-        director="Lana Wachowski, Lilly Wachowski",
-        cast=["Keanu Reeves", "Laurence Fishburne"],
-        duration=136,
-        rating=8.7,
-        poster_url="https://example.com/poster2.jpg",
-        trailer_url="https://example.com/trailer2.mp4",
-        trending_score=89.7
-    )
-]
-
-@router.get("/popular", response_model=List[MovieResponse])
-async def get_popular_movies(limit: int = Query(20, ge=1, le=100)):
-    """Get popular movies"""
-    return sorted(MOCK_MOVIES, key=lambda x: x.trending_score, reverse=True)[:limit]
-
-@router.get("/search", response_model=List[MovieResponse])
-async def search_movies(q: str = Query(..., min_length=2)):
-    """Search movies by title, genre, or cast"""
-    query = q.lower()
-    return [
-        movie for movie in MOCK_MOVIES
-        if query in movie.title.lower() or 
-           any(query in genre.lower() for genre in movie.genre) or
-           any(query in cast_member.lower() for cast_member in movie.cast)
-    ]
-
-@router.get("/recommendations", response_model=List[MovieResponse])
-async def get_movie_recommendations(current_user: dict = Depends(get_current_user)):
-    """Get personalized movie recommendations"""
-    # TODO: Implement ML-based recommendations
+@router.get("/watchlist", response_model=List[MovieResponse])
+async def get_watchlist(
+    limit: int = Query(50, ge=1, le=100),
+    current_user: dict = Depends(get_current_user)
+):
+    """Get user's watchlist"""
+    # TODO: Retrieve from user watchlist
     return MOCK_MOVIES[:5]
 
-@router.post("/watchlist")
-async def manage_watchlist(request: WatchlistRequest, current_user: dict = Depends(get_current_user)):
-    """Add/remove movie from watchlist"""
-    # TODO: Store in user watchlist
-    return {"message": f"Movie {request.action}ed from watchlist", "movie_id": request.movie_id}
-
-@router.post("/history")
-async def track_movie_history(request: MovieHistoryRequest, current_user: dict = Depends(get_current_user)):
-    """Track user's movie watching history"""
-    # TODO: Store viewing analytics
-    return {"message": "History tracked", "movie_id": request.movie_id}
+@router.get("/history", response_model=List[MovieResponse])
+async def get_movie_history(
+    limit: int = Query(50, ge=1, le=100),
+    current_user: dict = Depends(get_current_user)
+):
+    """Get user's movie watching history"""
+    # TODO: Retrieve from user history
+    return MOCK_MOVIES[:10]

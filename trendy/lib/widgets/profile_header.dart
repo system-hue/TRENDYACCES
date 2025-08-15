@@ -15,95 +15,86 @@ class ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Profile Picture
-        GestureDetector(
-          onTap: () {
-            // Handle profile picture change
-          },
-          child: CircleAvatar(
-            radius: 50,
-            backgroundImage: user.avatarUrl != null
-                ? NetworkImage(user.avatarUrl!)
-                : null,
-            child: user.avatarUrl == null
-                ? const Icon(Icons.person, size: 50)
-                : null,
-          ),
-        ),
-        const SizedBox(height: 16),
-
-        // Name and Username
-        Text(
-          user.displayName,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        Text(
-          '@${user.username}',
-          style: const TextStyle(fontSize: 16, color: Colors.grey),
-        ),
-
-        // Bio with clickable hashtags
-        if (user.bio != null)
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: _buildBioWithHashtags(user.bio!),
-          ),
-
-        // Location
-        if (user.location != null)
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          // Avatar and basic info
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.location_on, size: 16, color: Colors.grey),
-              const SizedBox(width: 4),
-              Text(user.location!, style: const TextStyle(color: Colors.grey)),
+              CircleAvatar(
+                radius: 40,
+                backgroundImage: NetworkImage(user.avatarUrl ?? ''),
+                child: (user.avatarUrl == null || user.avatarUrl!.isEmpty)
+                    ? const Icon(Icons.person, size: 40)
+                    : null,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.displayName ?? 'Unknown',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      '@${user.username ?? 'user'}',
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                    if (user.location != null && user.location!.isNotEmpty)
+                      Text(
+                        user.location!,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ],
           ),
+          const SizedBox(height: 16),
 
-        // Edit/Follow Button
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ElevatedButton(
-            onPressed: user.isOwnProfile ? onEditProfile : onFollowToggle,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: user.isOwnProfile
-                  ? Colors.deepPurple
-                  : (user.isFollowing ? Colors.grey : Colors.deepPurple),
+          // Bio
+          if (user.bio != null && user.bio!.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(user.bio!, style: const TextStyle(fontSize: 14)),
             ),
-            child: Text(
-              user.isOwnProfile
-                  ? 'Edit Profile'
-                  : (user.isFollowing ? 'Following' : 'Follow'),
-            ),
+
+          // Action buttons
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              if (user.isOwnProfile)
+                ElevatedButton(
+                  onPressed: onEditProfile,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepPurple,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Edit Profile'),
+                )
+              else
+                ElevatedButton(
+                  onPressed: onFollowToggle,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: user.isFollowing
+                        ? Colors.grey
+                        : Colors.deepPurple,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: Text(user.isFollowing ? 'Following' : 'Follow'),
+                ),
+            ],
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBioWithHashtags(String bio) {
-    final parts = bio.split(' ');
-    return Wrap(
-      alignment: WrapAlignment.center,
-      children: parts.map((part) {
-        if (part.startsWith('#') || part.startsWith('@')) {
-          return GestureDetector(
-            onTap: () {
-              // Handle hashtag/mention click
-            },
-            child: Text(
-              '$part ',
-              style: const TextStyle(
-                color: Colors.deepPurple,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          );
-        }
-        return Text('$part ');
-      }).toList(),
+        ],
+      ),
     );
   }
 }

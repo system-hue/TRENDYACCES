@@ -1,14 +1,1 @@
-import 'package:flutter/material.dart';
-
-class PostCreationScreen extends StatelessWidget {
-  const PostCreationScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Post Creation Screen'),
-      ),
-    );
-  }
-}
+export 'views/post_creation/post_creation_screen.dart';
