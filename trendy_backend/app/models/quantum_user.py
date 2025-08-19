@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, Float, JSON, LargeBinary
 from sqlalchemy.sql import func
-from .base import Base
+from app.database import Base
 import json
 
 class QuantumUser(Base):

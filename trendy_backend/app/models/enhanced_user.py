@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, Float
 from sqlalchemy.sql import func
-from .base import Base
+from app.database import Base
 
 class EnhancedUser(Base):
     __tablename__ = "enhanced_users"
