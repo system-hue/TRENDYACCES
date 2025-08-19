@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:trendy/screens/home_screen.dart';
-import 'package:trendy/screens/music_screen.dart';
-import 'package:trendy/screens/movies_screen.dart';
-import 'package:trendy/screens/sports_screen.dart';
+import 'package:trendy/screens/explore_screen.dart';
+import 'package:trendy/screens/create_post_screen.dart';
+import 'package:trendy/screens/inbox_screen.dart';
 import 'package:trendy/screens/profile_screen.dart';
-import 'package:trendy/screens/calls_chats_screen.dart';
+import 'package:trendy/screens/ai_features_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -18,9 +18,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
-    const MusicScreen(),
-    const MoviesScreen(),
-    const SportsScreen(),
+    const ExploreScreen(),
+    const CreatePostScreen(),
+    AIFeaturesScreen(),
+    const InboxScreen(),
     const ProfileScreen(),
   ];
 
@@ -55,6 +56,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             icon: Icon(Icons.sports_outlined),
             selectedIcon: Icon(Icons.sports),
             label: 'Sports',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.auto_fix_high_outlined),
+            selectedIcon: Icon(Icons.auto_fix_high),
+            label: 'AI Features',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outlined),

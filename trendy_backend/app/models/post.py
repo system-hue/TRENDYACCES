@@ -10,4 +10,10 @@ class Post(Base):
     content = Column(String, nullable=False)
     image_url = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    category = Column(String, nullable=False, default="general")
+    type = Column(String, nullable=False, default="post")
+    likes_count = Column(Integer, default=0)
+    views_count = Column(Integer, default=0)
+    
     user = relationship("User", back_populates="posts")
+    comments = relationship("Comment", back_populates="post")

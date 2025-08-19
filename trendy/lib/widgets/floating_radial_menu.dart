@@ -2,7 +2,16 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 class FloatingRadialMenu extends StatefulWidget {
-  const FloatingRadialMenu({super.key});
+  final VoidCallback onMusicTap;
+  final VoidCallback onMoviesTap;
+  final VoidCallback onFootballTap;
+
+  const FloatingRadialMenu({
+    super.key,
+    required this.onMusicTap,
+    required this.onMoviesTap,
+    required this.onFootballTap,
+  });
 
   @override
   State<FloatingRadialMenu> createState() => _FloatingRadialMenuState();
@@ -42,92 +51,88 @@ class _FloatingRadialMenuState extends State<FloatingRadialMenu>
   @override
   Widget build(BuildContext context) {
     return Stack(
+      alignment: Alignment.bottomRight,
       children: [
+        // Radial menu items
+        ..._buildRadialMenuItems(),
+        
         // Main FAB
-        Positioned(
-          bottom: 20,
-          right: 20,
-          child: FloatingActionButton(
-            onPressed: _toggleMenu,
-            backgroundColor: Colors.deepPurple,
-            child: AnimatedIcon(
-              icon: AnimatedIcons.menu_close,
-              progress: _animationController,
-            ),
+        FloatingActionButton(
+          onPressed: _toggleMenu,
+          backgroundColor: Colors.deepPurple,
+          child: AnimatedIcon(
+            icon: AnimatedIcons.menu_close,
+            progress: _animationController,
           ),
         ),
-
-        // Radial menu items
-        if (_isOpen) ...[
-          _buildRadialButton(
-            context,
-            icon: Icons.sports_basketball,
-            label: 'Sports',
-            color: Colors.orange,
-            angle: 0,
-            routeName: '/sports',
-          ),
-          _buildRadialButton(
-            context,
-            icon: Icons.movie,
-            label: 'Movies',
-            color: Colors.red,
-            angle: 72,
-            routeName: '/movies',
-          ),
-          _buildRadialButton(
-            context,
-            icon: Icons.music_note,
-            label: 'Music',
-            color: Colors.blue,
-            angle: 144,
-            routeName: '/music',
-          ),
-          _buildRadialButton(
-            context,
-            icon: Icons.article,
-            label: 'News',
-            color: Colors.green,
-            angle: 216,
-            routeName: '/news',
-          ),
-          _buildRadialButton(
-            context,
-            icon: Icons.flag,
-            label: 'Goals',
-            color: Colors.purple,
-            angle: 288,
-            routeName: '/goals',
-          ),
-        ],
       ],
     );
   }
 
-  Widget _buildRadialButton(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required Color color,
-    required double angle,
-    required String routeName,
-  }) {
-    final double radius = 100;
-    final double x = radius * cos(angle * pi / 180);
-    final double y = radius * sin(angle * pi / 180);
+  List<Widget> _buildRadialMenuItems() {
+    if (!_isOpen) return [];
 
-    return Positioned(
-      bottom: 20 + y,
-      right: 20 + x,
-      child: Tooltip(
-        message: label,
-        child: FloatingActionButton(
-          mini: true,
-          backgroundColor: color,
-          onPressed: () => Navigator.of(context).pushNamed(routeName),
-          child: Icon(icon, size: 20),
+    const double radius = 120;
+    final List<Widget> items = [];
+
+    final List<Map<String, dynamic>> menuItems = [
+      {
+        'icon': Icons.music_note,
+        'label': 'Music',
+        'color': Colors.blue,
+        'angle': 0,
+        'onTap': widget.onMusicTap,
+      },
+      {
+        'icon': Icons.movie,
+        'label': 'Movies',
+        'color': Colors.red,
+        'angle': 120,
+        'onTap': widget.onMoviesTap,
+      },
+      {
+        'icon': Icons.sports_soccer,
+        'label': 'Football',
+        'color': Colors.green,
+        'angle': 240,
+        'onTap': widget.onFootballTap,
+      },
+    ];
+
+    for (int i = 0; i < menuItems.length; i++) {
+      final double angle = menuItems[i]['angle'] * pi / 180;
+      final double x = radius * cos(angle);
+      final double y = radius * sin(angle);
+
+      items.add(
+        Positioned(
+          bottom: 16 + y,
+          right: 16 + x,
+          child: ScaleTransition(
+            scale: CurvedAnimation(
+              parent: _animationController,
+              curve: Interval(i * 0.1, 1.0, curve: Curves.elasticOut),
+            ),
+            child: FloatingActionButton(
+              mini: true,
+              backgroundColor: menuItems[i]['color'],
+              onPressed: menuItems[i]['onTap'],
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(menuItems[i]['icon'], size: 24),
+                  Text(
+                    menuItems[i]['label'],
+                    style: const TextStyle(fontSize: 10),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
-      ),
-    );
+      );
+    }
+
+    return items;
   }
 }

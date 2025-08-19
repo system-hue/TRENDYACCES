@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trendy/services/api_service.dart';
 
 class SportsScreen extends StatefulWidget {
   const SportsScreen({super.key});
@@ -7,20 +8,63 @@ class SportsScreen extends StatefulWidget {
   State<SportsScreen> createState() => _SportsScreenState();
 }
 
-class _SportsScreenState extends State<SportsScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _SportsScreenState extends State<SportsScreen> {
+  List<dynamic> matches = [];
+  List<dynamic> liveMatches = [];
+  bool isLoading = true;
+  bool hasError = false;
+  String errorMessage = '';
+  String selectedLeague = 'All';
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _loadMatches();
+    _loadLiveMatches();
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+  Future<void> _loadMatches({String? league}) async {
+    try {
+      setState(() {
+        isLoading = true;
+        hasError = false;
+      });
+
+      final response = await ApiService.getFootballMatches(
+        league: league == 'All' ? null : league,
+      );
+
+      if (!mounted) return;
+      setState(() {
+        matches = response['matches'] as List<dynamic>;
+        isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        hasError = true;
+        errorMessage = e.toString();
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _loadLiveMatches() async {
+    try {
+      final response = await ApiService.getLiveMatches();
+      if (!mounted) return;
+      setState(() {
+        liveMatches = response['matches'] as List<dynamic>;
+      });
+    } catch (e) {
+      print('Error loading live matches: $e');
+    }
+  }
+
+  Future<void> _refreshMatches() async {
+    await _loadMatches(league: selectedLeague);
+    await _loadLiveMatches();
   }
 
   @override
@@ -28,142 +72,241 @@ class _SportsScreenState extends State<SportsScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sports'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Football'),
-            Tab(text: 'Basketball'),
-            Tab(text: 'More Sports'),
-          ],
-        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _refreshMatches,
+          ),
+        ],
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [_FootballTab(), _BasketballTab(), _MoreSportsTab()],
-      ),
-    );
-  }
-}
-
-class _FootballTab extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        _buildSectionTitle('Live Scores'),
-        _buildLiveScores(),
-        const SizedBox(height: 24),
-        _buildSectionTitle('Upcoming Matches'),
-        _buildUpcomingMatches(),
-        const SizedBox(height: 24),
-        _buildSectionTitle('League Tables'),
-        _buildLeagueTables(),
-      ],
+      body: _buildBody(),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
+  Widget _buildBody() {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-  Widget _buildLiveScores() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+    if (hasError) {
+      return Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildMatchCard('Manchester United', 'Liverpool', '2-1', '75\''),
-            const SizedBox(height: 8),
-            _buildMatchCard('Arsenal', 'Chelsea', '1-0', '68\''),
+            Text('Error: $errorMessage'),
+            ElevatedButton(
+              onPressed: _refreshMatches,
+              child: const Text('Retry'),
+            ),
           ],
         ),
-      ),
-    );
-  }
+      );
+    }
 
-  Widget _buildMatchCard(
-    String team1,
-    String team2,
-    String score,
-    String time,
-  ) {
-    return ListTile(
-      title: Text('$team1 vs $team2'),
-      subtitle: Text('Score: $score • Time: $time'),
-      trailing: const Icon(Icons.chevron_right),
-    );
-  }
-
-  Widget _buildUpcomingMatches() {
-    return Card(
-      child: Padding(
+    return RefreshIndicator(
+      onRefresh: _refreshMatches,
+      child: ListView(
+        controller: _scrollController,
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildUpcomingMatch('Real Madrid', 'Barcelona', 'Today, 20:00'),
-            const SizedBox(height: 8),
-            _buildUpcomingMatch('Bayern Munich', 'PSG', 'Tomorrow, 19:30'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildUpcomingMatch(String team1, String team2, String time) {
-    return ListTile(
-      title: Text('$team1 vs $team2'),
-      subtitle: Text(time),
-      trailing: const Icon(Icons.notifications),
-    );
-  }
-
-  Widget _buildLeagueTables() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildLeagueRow('1', 'Manchester City', '78 pts'),
-            _buildLeagueRow('2', 'Arsenal', '75 pts'),
-            _buildLeagueRow('3', 'Liverpool', '72 pts'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLeagueRow(String position, String team, String points) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
         children: [
-          Text(position, style: const TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(width: 16),
-          Expanded(child: Text(team)),
-          Text(points, style: const TextStyle(fontWeight: FontWeight.bold)),
+          if (liveMatches.isNotEmpty) ...[
+            _buildLiveMatchesSection(),
+            const SizedBox(height: 20),
+          ],
+          _buildMatchesSection(),
         ],
       ),
     );
   }
-}
 
-class _BasketballTab extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Center(child: Text('Basketball content coming soon...'));
+  Widget _buildLiveMatchesSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Live Matches',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 120,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: liveMatches.length,
+            itemBuilder: (context, index) {
+              final match = liveMatches[index];
+              return _buildLiveMatchCard(match);
+            },
+          ),
+        ),
+      ],
+    );
   }
-}
 
-class _MoreSportsTab extends StatelessWidget {
+  Widget _buildLiveMatchCard(dynamic match) {
+    return Container(
+      width: 200,
+      margin: const EdgeInsets.only(right: 10),
+      child: Card(
+        color: Colors.red[50],
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    match['home_team'] ?? '',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    match['away_team'] ?? '',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${match['home_score'] ?? 0}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Text(
+                    'LIVE',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                  Text(
+                    '${match['away_score'] ?? 0}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                match['competition'] ?? '',
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMatchesSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'All Matches',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: matches.length,
+          itemBuilder: (context, index) {
+            final match = matches[index];
+            return _buildMatchCard(match);
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMatchCard(dynamic match) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 10),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(
+                        match['home_team'] ?? '',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${match['home_score'] ?? '-'}',
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 20),
+                const Text('VS', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(
+                        match['away_team'] ?? '',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${match['away_score'] ?? '-'}',
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Center(
+              child: Column(
+                children: [
+                  Text(
+                    match['competition'] ?? '',
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  Text(
+                    match['match_date'] ?? '',
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
-    return const Center(child: Text('More sports content coming soon...'));
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }

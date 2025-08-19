@@ -1,17 +1,20 @@
 from pydantic import BaseModel
+from typing import Optional, List
 from datetime import datetime
-from typing import Optional
 
-class PostCreate(BaseModel):
+class PostBase(BaseModel):
     content: str
     image_url: Optional[str] = None
+    location: Optional[str] = None
 
-class PostOut(BaseModel):
+class PostCreate(PostBase):
+    pass
+
+class PostResponse(PostBase):
     id: int
     user_id: int
-    content: str
-    image_url: Optional[str]
     created_at: datetime
-
+    updated_at: Optional[datetime] = None
+    
     class Config:
-        orm_mode = True
+        from_attributes = True

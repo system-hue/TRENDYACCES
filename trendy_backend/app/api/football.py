@@ -6,7 +6,7 @@ import httpx
 import os
 from datetime import datetime
 
-router = APIRouter(prefix="/football", tags=["football"])
+router = APIRouter()
 
 class MatchResponse(BaseModel):
     id: str
@@ -49,16 +49,46 @@ class FootballSearchRequest(BaseModel):
 FOOTBALL_API_KEY = os.getenv("FOOTBALL_API_KEY", "demo-key")
 FOOTBALL_BASE_URL = "https://api.football-data.org/v4"
 
-@router.get("/matches/today", response_model=List[MatchResponse])
+@router.get("/")
+async def get_matches_root(
+    league: Optional[str] = Query(None, description="Filter by league")
+):
+    """Root endpoint expected by client: returns {matches: [...]}"""
+    today = datetime.now().strftime("%Y-%m-%d")
+    matches = [
+        MatchResponse(
+            id="match-001",
+            home_team="Manchester United",
+            away_team="Liverpool",
+            home_score=2,
+            away_score=1,
+            match_date=today,
+            status="finished",
+            competition="Premier League",
+            venue="Old Trafford"
+        ),
+        MatchResponse(
+            id="match-002",
+            home_team="Arsenal",
+            away_team="Chelsea",
+            home_score=3,
+            away_score=2,
+            match_date=today,
+            status="finished",
+            competition="Premier League",
+            venue="Emirates Stadium"
+        )
+    ]
+    if league:
+        matches = [m for m in matches if league.lower() in m.competition.lower()]
+    return {"matches": [m.dict() for m in matches]}
+
+@router.get("/matches/today")
 async def get_today_matches(
-    league: Optional[str] = Query(None, description="Filter by league"),
-    current_user: dict = Depends(get_current_user)
+    league: Optional[str] = Query(None, description="Filter by league")
 ):
     """Get today's football matches with rhyme-enhanced data"""
     today = datetime.now().strftime("%Y-%m-%d")
-    
-    # For demo purposes, using mock data with real API structure
-    # In production, integrate with football-data.org or similar
     matches = [
         MatchResponse(
             id="match-001",
@@ -89,17 +119,14 @@ async def get_today_matches(
             rhyme_score=88.7
         )
     ]
-    
     if league:
         matches = [m for m in matches if league.lower() in m.competition.lower()]
-    
-    return matches
+    return {"matches": [m.dict() for m in matches]}
 
-@router.get("/live", response_model=List[MatchResponse])
-async def get_live_matches(current_user: dict = Depends(get_current_user)):
+@router.get("/live")
+async def get_live_matches():
     """Get live football matches with real-time updates"""
-    # Mock live matches - integrate with real API
-    return [
+    matches = [
         MatchResponse(
             id="live-001",
             home_team="Real Madrid",
@@ -113,11 +140,11 @@ async def get_live_matches(current_user: dict = Depends(get_current_user)):
             rhyme_score=99.9
         )
     ]
+    return {"matches": [m.dict() for m in matches]}
 
 @router.get("/teams", response_model=List[TeamResponse])
 async def get_teams(
-    league: Optional[str] = Query(None, description="Filter by league"),
-    current_user: dict = Depends(get_current_user)
+    league: Optional[str] = Query(None, description="Filter by league")
 ):
     """Get football teams with rhyme-enhanced data"""
     teams = [
@@ -144,7 +171,7 @@ async def get_teams(
     return teams
 
 @router.get("/leagues", response_model=List[LeagueResponse])
-async def get_leagues(current_user: dict = Depends(get_current_user)):
+async def get_leagues():
     """Get football leagues with rhyme flow"""
     leagues = [
         LeagueResponse(
@@ -166,8 +193,7 @@ async def get_leagues(current_user: dict = Depends(get_current_user)):
 
 @router.get("/standings/{league_id}")
 async def get_league_standings(
-    league_id: str,
-    current_user: dict = Depends(get_current_user)
+    league_id: str
 ):
     """Get league standings with rhyme-enhanced presentation"""
     return {
@@ -190,8 +216,7 @@ async def get_league_standings(
 
 @router.get("/search", response_model=List[MatchResponse])
 async def search_football(
-    q: str = Query(..., min_length=2),
-    current_user: dict = Depends(get_current_user)
+    q: str = Query(..., min_length=2)
 ):
     """Search football matches, teams, or players with rhyme search"""
     query = q.lower()

@@ -3,7 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 from app.auth.jwt_handler import get_current_user
 
-router = APIRouter(prefix="/photos", tags=["photos"])
+router = APIRouter()
 
 class PhotoResponse(BaseModel):
     id: str
@@ -86,11 +86,32 @@ MOCK_PHOTOS = [
     )
 ]
 
+@router.get("/")
+async def get_photos(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(20, ge=1, le=100),
+    category: Optional[str] = Query(None, description="Filter by category"),
+    search: Optional[str] = Query(None, description="Search term")
+):
+    """Root photos endpoint expected by client: returns {photos: [...]}"""
+    photos_list = MOCK_PHOTOS
+    if category:
+        photos_list = [p for p in photos_list if category.lower() in p.category.lower()]
+    if search:
+        q = search.lower()
+        photos_list = [
+            p for p in photos_list
+            if q in p.title.lower()
+            or q in p.description.lower()
+            or any(q in t.lower() for t in p.tags)
+        ]
+    sliced = photos_list[skip:skip+limit]
+    return {"photos": [p.dict() for p in sliced], "total": len(photos_list)}
+
 @router.get("/trending", response_model=List[PhotoResponse])
 async def get_trending_photos(
     limit: int = Query(20, ge=1, le=100),
-    category: Optional[str] = Query(None, description="Filter by category"),
-    current_user: dict = Depends(get_current_user)
+    category: Optional[str] = Query(None, description="Filter by category")
 ):
     """Get trending photos based on current popularity"""
     photos_list = MOCK_PHOTOS
@@ -105,8 +126,7 @@ async def search_photos(
     q: str = Query(..., min_length=2, description="Search query"),
     category: Optional[str] = Query(None, description="Filter by category"),
     photographer: Optional[str] = Query(None, description="Filter by photographer"),
-    limit: int = Query(20, ge=1, le=100),
-    current_user: dict = Depends(get_current_user)
+    limit: int = Query(20, ge=1, le=100)
 ):
     """Search photos by title, tags, photographer, or category"""
     query = q.lower()
@@ -141,7 +161,7 @@ async def search_photos(
     return results[:limit]
 
 @router.get("/categories", response_model=List[str])
-async def get_categories(current_user: dict = Depends(get_current_user)):
+async def get_categories():
     """Get available photography categories"""
     categories = set()
     for photo in MOCK_PHOTOS:
@@ -150,16 +170,14 @@ async def get_categories(current_user: dict = Depends(get_current_user)):
 
 @router.post("/like")
 async def like_photo(
-    request: dict,
-    current_user: dict = Depends(get_current_user)
+    request: dict
 ):
     """Like/unlike a photo"""
     # TODO: Store in user preferences
     return {
         "message": "Photo preference updated",
         "photo_id": request.get("photo_id"),
-        "liked": request.get("liked"),
-        "user_id": current_user.get("id")
+        "liked": request.get("liked")
     }
 
 @router.get("/favorites", response_model=List[PhotoResponse])
@@ -178,46 +196,5 @@ async def get_photo_history(
 ):
     """Get user's photo viewing history"""
     # TODO: Retrieve from user history
-    return MOCK_PHOTOS[:10]  # Mock response
-It seems there is no photography API implemented yet in the backend. 
+    return MOCK_PHOTOS[:10]  # Mock response 
 
-Here is the plan to proceed:
-
-Information Gathered:
-- ContentApiService.dart has API calls for music, movies, and photography endpoints.
-- AudioPlayerService.dart provides audio player functionality.
-- Backend has music.py and movies.py API modules with mock data and endpoints for trending, search, recommendations, etc.
-- Photography API is missing in the backend.
-- Screens for music, movies, and photography exist but are placeholders without real data or search functionality.
-- Theming in main.dart uses Material3 with a seed color but no dark/light mode toggle yet.
-
-Plan:
-1. Backend:
-   - Implement photography API module similar to music and movies with trending, search, and recommendations endpoints.
-2. Frontend:
-   - Update music_screen.dart, movies_screen.dart, photography_screen.dart to fetch and display real data from APIs.
-   - Implement search functionality in these screens.
-   - Integrate AudioPlayerService for playing music audio.
-3. Theming:
-   - Add dark/light mode toggle in main.dart and propagate theme changes app-wide.
-
-Dependent Files:
-- trendy_backend/app/api/photos.py (new)
-- trendy/lib/screens/music_screen.dart
-- trendy/lib/screens/movies_screen.dart
-- trendy/lib/screens/photography_screen.dart
-- trendy/lib/services/content_api_service.dart (if needed)
-- trendy/lib/main.dart
-
-Followup Steps:
-- Implement backend photography API.
-- Implement frontend API integration and UI updates.
-- Implement audio player integration.
-- Implement search functionality.
-- Implement theming support with dark/light mode toggle.
-
-Please confirm if I can proceed with this plan or if you want to adjust anything before I start implementing. 
-
-<ask_followup_question>
-<question>Do you confirm the plan to implement the photography API backend, update frontend screens with API integration, add audio player and search functionality, and add theming support with dark/light mode toggle?</question>
-</ask_followup_question>

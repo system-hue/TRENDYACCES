@@ -59,3 +59,51 @@ def get_me(db: Session = Depends(get_db), user_id=Depends(get_current_user)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+@router.get("/{user_id}", response_model=UserOut)
+def get_user_profile(user_id: int, db: Session = Depends(get_db)):
+    """Get user profile by ID"""
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+@router.get("/{user_id}/posts")
+def get_user_posts(
+    user_id: int,
+    skip: int = 0,
+    limit: int = 20,
+    db: Session = Depends(get_db)
+):
+    """Get user posts with pagination - matches Flutter client expectations"""
+    from app.models.post import Post
+    from sqlalchemy import desc
+    
+    # Validate user exists
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Query posts with pagination
+    query = db.query(Post).filter(Post.user_id == user_id)
+    total = query.count()
+    posts = query.order_by(desc(Post.created_at)).offset(skip).limit(limit).all()
+    
+    return {
+        "posts": [
+            {
+                "id": post.id,
+                "content": post.content,
+                "image_url": post.image_url,
+                "created_at": post.created_at.isoformat(),
+                "user": {
+                    "id": post.user.id,
+                    "username": post.user.username
+                },
+                "likes": len(post.comments),
+                "comments": len(post.comments)
+            }
+            for post in posts
+        ],
+        "total": total
+    }

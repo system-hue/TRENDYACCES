@@ -24,7 +24,7 @@ def create_post(post: PostCreate, db: Session = Depends(get_db), user_id: int = 
     db.refresh(new_post)
     return new_post
 
-@router.get("/", response_model=list[PostOut])
+@router.get("/all", response_model=list[PostOut])
 def get_all_posts(db: Session = Depends(get_db)):
     return db.query(Post).order_by(Post.created_at.desc()).all()
 

@@ -1,60 +1,61 @@
 class Song {
   final String id;
-  final String name;
-  final List<Artist> artists;
-  final Album album;
-  final int? durationMs;
-  final bool? explicit;
-  final String? previewUrl;
+  final String title;
+  final String artist;
+  final String imageUrl;
+  final String audioUrl;
+  final int duration;
+  final bool explicit;
+  final String album;
+  final DateTime createdAt;
+  final int likes;
+  final int plays;
 
   Song({
     required this.id,
-    required this.name,
-    required this.artists,
+    required this.title,
+    required this.artist,
+    required this.imageUrl,
+    required this.audioUrl,
+    required this.duration,
+    required this.explicit,
     required this.album,
-    this.durationMs,
-    this.explicit,
-    this.previewUrl,
+    required this.createdAt,
+    required this.likes,
+    required this.plays,
   });
 
-  factory Song.fromSpotify(Map<String, dynamic> json) {
-    final List<dynamic> artistsJson = json['artists'];
-    final List<Artist> artists = artistsJson.map((artist) => Artist.fromSpotify(artist)).toList();
-    final Map<String, dynamic> albumJson = json;
-    final Album album = Album.fromSpotify(albumJson);
-
+  factory Song.fromJson(Map<String, dynamic> json) {
     return Song(
-      id: json['id'],
-      name: json['name'],
-      artists: artists,
-      album: album,
+      id: json['id'] ?? '',
+      title: json['title'] ?? '',
+      artist: json['artist'] ?? '',
+      imageUrl: json['image_url'] ?? '',
+      audioUrl: json['audio_url'] ?? '',
+      duration: json['duration'] ?? 0,
+      explicit: json['explicit'] ?? false,
+      album: json['album'] ?? '',
+      createdAt: DateTime.parse(
+        json['created_at'] ?? DateTime.now().toIso8601String(),
+      ),
+      likes: json['likes'] ?? 0,
+      plays: json['plays'] ?? 0,
     );
   }
-}
 
-class Artist {
-  final String name;
-
-  Artist({required this.name});
-
-  factory Artist.fromSpotify(Map<String, dynamic> json) {
-    return Artist(
-      name: json['name'],
-    );
-  }
-}
-
-class Album {
-  final String name;
-  final String imageUrl;
-
-  Album({required this.name, required this.imageUrl});
-
-  factory Album.fromSpotify(Map<String, dynamic> json) {
-    final List<dynamic> images = json['images'];
-    return Album(
-      name: json['name'],
-      imageUrl: images.isNotEmpty ? images.first['url'] : '',
-    );
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'artist': artist,
+      'image_url': imageUrl,
+      'audio_url': audioUrl,
+      'duration': duration,
+      'explicit': explicit,
+      'album': album,
+      'created_at': createdAt.toIso8601String(),
+      'likes': likes,
+      'plays': plays,
+    };
   }
 }
