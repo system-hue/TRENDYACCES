@@ -1,11 +1,11 @@
-from .user import UserCreate, UserResponse
-from .post import PostCreate, PostResponse
-from .movie import MovieCreate, MovieResponse
-from .music import MusicCreate, MusicResponse
+from .user import UserCreate, UserOut
+from .post import PostCreate, PostOut
+from .movie import MovieCreate, MovieOut
+from .music import MusicCreate, MusicOut
 
 __all__ = [
-    "UserCreate", "UserResponse",
-    "PostCreate", "PostResponse", 
-    "MovieCreate", "MovieResponse",
-    "MusicCreate", "MusicResponse"
+    "UserCreate", "UserOut",
+    "PostCreate", "PostOut", 
+    "MovieCreate", "MovieOut",
+    "MusicCreate", "MusicOut"
 ]

@@ -18,3 +18,6 @@ class PostResponse(PostBase):
     
     class Config:
         from_attributes = True
+
+# Alias PostOut to PostResponse for compatibility
+PostOut = PostResponse
