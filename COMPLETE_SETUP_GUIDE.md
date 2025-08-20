@@ -195,5 +195,4 @@ firebase deploy --only hosting
 ## 🆘 **Support**
 For technical support, contact: support@trendy.app
 
-## 🎊 **Congratulations!**
-Your app is now ready to compete with Instagram and TikTok. The powerful features will generate millions in revenue and provide users with an unparalleled social media experience.
+## 🎊 **Congratulations!*
