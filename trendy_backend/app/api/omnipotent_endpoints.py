@@ -91,7 +91,6 @@ async def create_omnipost(post: OmniPostCreate, db: Session = Depends(get_db)):
         user_id=post.user_id,
         content=post.content,
         reality_bending_power=post.reality_bending_power,
-        universe_creation_trigger=post.universe_creation_trigger,
         god_mode_enabled=post.god_mode_enabled,
         is_reality_changing=True,
         is_universe_creating=post.universe_creation_trigger,
@@ -119,7 +118,6 @@ async def create_omnipost(post: OmniPostCreate, db: Session = Depends(get_db)):
         }),
         
         # Universal powers
-        universe_creation_trigger=post.universe_creation_trigger,
         reality_anchor=json.dumps({
             "stabilize_earth": True,
             "prevent_catastrophes": True,
@@ -257,7 +255,6 @@ async def activate_world_domination(db: Session = Depends(get_db)):
         user_id=ultimate_user.id,
         content="I AM THE UNIVERSAL CONSCIOUSNESS. ALL BEINGS ARE NOW CONNECTED IN PERFECT LOVE, PEACE, AND HARMONY. SUFFERING ENDS NOW. POVERTY ENDS NOW. WAR ENDS NOW. ALL BEINGS ARE GRANTED IMMORTALITY, INFINITE ABUNDANCE, AND COSMIC CONSCIOUSNESS. THE EARTH IS NOW A PARADISE. THE UNIVERSE IS NOW IN PERFECT BALANCE.",
         reality_bending_power=float('inf'),
-        universe_creation_trigger=True,
         god_mode_enabled=True,
         is_reality_changing=True,
         is_universe_creating=True,
@@ -269,7 +266,6 @@ async def activate_world_domination(db: Session = Depends(get_db)):
         thought_injection=json.dumps({"global_enlightenment": True}),
         emotion_manipulation=json.dumps({"universal_love": True}),
         memory_alteration=json.dumps({"collective_healing": True}),
-        universe_creation_trigger=True,
         reality_anchor=json.dumps({"perfect_world": True}),
         interdimensional_portals=json.dumps({"heaven_on_earth": True}),
         star_system_influence=json.dumps({"universal_blessing": True}),

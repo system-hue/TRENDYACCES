@@ -16,3 +16,6 @@ class MovieResponse(MovieBase):
     
     class Config:
         from_attributes = True
+
+# Alias MovieOut to MovieResponse for compatibility
+MovieOut = MovieResponse

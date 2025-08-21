@@ -116,12 +116,20 @@ class QuantumUser(Base):
     void_control = Column(Float, default=0.0)  # Control over nothingness
     
     # Teleportation Network
+<<<<<<< HEAD
     teleportation_nodes = Column(JSON)
+=======
+    teleportation_nodes = Column(JSON)  # Points user can teleport to
+>>>>>>> 61615cdf18e3fb0d203f0821029f77ed7e13d0b3
     instant_travel_power = Column(Float, default=0.0)
     wormhole_creation = Column(JSON)
     
     # Omniscience Features
+<<<<<<< HEAD
     knowledge_downloads = Column(JSON)
+=======
+    knowledge_downloads = Column(JSON)  # Direct knowledge transfer
+>>>>>>> 61615cdf18e3fb0d203f0821029f77ed7e13d0b3
     future_prediction_accuracy = Column(Float, default=0.0)
     past_reconstruction_ability = Column(Float, default=0.0)
     
