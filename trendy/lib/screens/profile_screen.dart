@@ -34,8 +34,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         hasError = false;
       });
 
-      // For demo purposes, using mock data - replace with actual user data
-      final response = await ApiService.getUserProfile('demo-user-id');
+      // Fetch profile of demo user (ID 1)
+      final response = await ApiService.getUserProfile('1');
       if (!mounted) return;
       setState(() {
         userProfile = UserProfile(
@@ -66,7 +66,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadUserPosts() async {
     try {
-      final resp = await ApiService.getUserPosts('demo-user-id');
+      final resp = await ApiService.getUserPosts('1');
       if (!mounted) return;
       setState(() {
         userPosts = (resp['posts'] as List?) ?? [];

@@ -6,6 +6,7 @@ import 'package:trendy/screens/auth/login_screen.dart';
 import 'package:trendy/screens/main_navigation_screen.dart';
 import 'package:trendy/services/auth_state_service.dart';
 import 'package:trendy/utils/memory_manager_simple.dart';
+import 'package:trendy/services/ads_service.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -34,6 +35,9 @@ Future<void> main() async {
 
     // Initialize auth state service
     await AuthStateService().initialize();
+
+    // Initialize Ads SDK (non-blocking)
+    unawaited(AdsService.initialize());
 
     runApp(const MyApp());
   } catch (e) {

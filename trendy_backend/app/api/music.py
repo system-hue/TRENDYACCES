@@ -53,8 +53,10 @@ MOCK_MUSIC = [
 
 GENRES = ["Pop", "Rock", "Hip-Hop", "Jazz", "Classical", "EDM"]
 
+from typing import Optional
+
 @router.get("/")
-async def get_music(skip: int = 0, limit: int = 20, genre: str | None = None, search: str | None = None):
+async def get_music(skip: int = 0, limit: int = 20, genre: Optional[str] = None, search: Optional[str] = None):
     items = MOCK_MUSIC
     if genre:
         items = [m for m in items if m.get("genre", "").lower() == genre.lower()]

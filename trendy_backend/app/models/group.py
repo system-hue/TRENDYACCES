@@ -24,6 +24,7 @@ class Group(Base):
     creator = relationship("User", back_populates="created_groups")
     members = relationship("GroupMember", back_populates="group")
     messages = relationship("Message", back_populates="group")
-    events = relationship("Event", back_populates="group")
-    polls = relationship("Poll", back_populates="group")
-    scheduled_posts = relationship("ScheduledPost", back_populates="group")
+    # Removed undefined relationships to prevent mapper errors
+    # events = relationship("Event", back_populates="group")
+    # polls = relationship("Poll", back_populates="group")
+    # scheduled_posts = relationship("ScheduledPost", back_populates="group")

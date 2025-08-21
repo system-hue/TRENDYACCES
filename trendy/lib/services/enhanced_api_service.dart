@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:trendy/services/api_service.dart';
 
 class EnhancedApiService {
   static const String baseUrl = 'http://10.0.2.2:8000'; // For Android emulator
@@ -218,5 +219,54 @@ class EnhancedApiService {
     } catch (e) {
       throw Exception('Error translating text: $e');
     }
+  }
+
+  // Added for InboxScreen compatibility
+  static Future<List<dynamic>> getMessages() async {
+    // Mock messages for demo; integrate backend when auth is ready
+    final now = DateTime.now().toIso8601String();
+    return [
+      {
+        'id': 1,
+        'sender': 'Alice',
+        'avatar': 'https://i.pravatar.cc/100?img=1',
+        'content': 'Hey there! How are you?',
+        'timestamp': now,
+      },
+      {
+        'id': 2,
+        'sender': 'Bob',
+        'avatar': 'https://i.pravatar.cc/100?img=2',
+        'content': 'Let\'s catch up later.',
+        'timestamp': now,
+      },
+    ];
+  }
+
+  static Future<List<dynamic>> getNotifications() async {
+    // Use existing API service that hits backend /api/notifications
+    try {
+      return await ApiService.getNotifications();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static Future<List<dynamic>> getCalls() async {
+    final now = DateTime.now().toIso8601String();
+    return [
+      {
+        'id': 1,
+        'caller': 'Charlie',
+        'type': 'Video',
+        'created_at': now,
+      },
+      {
+        'id': 2,
+        'caller': 'Dana',
+        'type': 'Voice',
+        'created_at': now,
+      },
+    ];
   }
 }

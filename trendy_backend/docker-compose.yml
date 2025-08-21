@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://trendy:trendy123@db:5432/trendy_db
+      - REDIS_URL=redis://redis:6379
+      - FIREBASE_CREDENTIALS_JSON_PATH=/app/firebase-credentials.json
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+      - TMDB_API_KEY=${TMDB_API_KEY}
+      - APISPORTS_KEY=${APISPORTS_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - SECRET_KEY=${SECRET_KEY}
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./firebase-credentials.json:/app/firebase-credentials.json:ro
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=trendy
+      - POSTGRES_PASSWORD=trendy123
+      - POSTGRES_DB=trendy_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

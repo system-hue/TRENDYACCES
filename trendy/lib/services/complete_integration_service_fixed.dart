@@ -62,7 +62,7 @@ class CompleteIntegrationService {
       _agoraEngine = createAgoraRtcEngine();
       await _agoraEngine!.initialize(
         const RtcEngineContext(
-          appId: 'YOUR_AGORA_APP_ID', // Replace with your actual Agora App ID
+          appId: 'ca957e7ecf104efd8704f26f9848a2df', // Real Agora App ID
         ),
       );
 
@@ -223,7 +223,7 @@ class CompleteIntegrationService {
       final token = await user?.getIdToken();
 
       final response = await http.post(
-        Uri.parse('${AppConfig.baseUrl}/api/v1/agora/token'),
+        Uri.parse('${AppConfig.baseUrl}/api/agora/token'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',

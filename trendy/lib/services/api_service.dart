@@ -435,4 +435,103 @@ class ApiService {
       throw Exception('Error searching: $e');
     }
   }
+
+  // AI Features API (used by AIFeaturesScreen)
+  static Future<Map<String, dynamic>> translateText({
+    required String text,
+    required String targetLanguage,
+  }) async {
+    try {
+      final uri = Uri.parse('$baseUrl/api/ai/translate');
+      final response = await http
+          .post(
+            uri,
+            headers: _getHeaders(),
+            body: json.encode({
+              'text': text,
+              'target_language': targetLanguage,
+              'source_language': 'auto',
+            }),
+          )
+          .timeout(timeoutDuration);
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to translate: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error translating: $e');
+    }
+  }
+
+  static Future<Map<String, dynamic>> analyzeMood(String text) async {
+    try {
+      final uri = Uri.parse('$baseUrl/api/ai/analyze-mood');
+      final response = await http
+          .post(
+            uri,
+            headers: _getHeaders(),
+            body: json.encode({'text': text}),
+          )
+          .timeout(timeoutDuration);
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to analyze mood: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error analyzing mood: $e');
+    }
+  }
+
+  static Future<Map<String, dynamic>> autoEditText(String text) async {
+    try {
+      final uri = Uri.parse('$baseUrl/api/ai/smart-edit/auto');
+      final response = await http
+          .post(
+            uri,
+            headers: _getHeaders(),
+            body: json.encode({'text': text}),
+          )
+          .timeout(timeoutDuration);
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to auto-edit text: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error auto-editing text: $e');
+    }
+  }
+
+  static Future<Map<String, dynamic>> getMoodBasedFeed({
+    required String preferredMood,
+    int limit = 20,
+  }) async {
+    try {
+      final params = {
+        'preferred_mood': preferredMood,
+        'limit': limit.toString(),
+      };
+
+      final uri = Uri.parse('$baseUrl/api/ai/feed/mood-based')
+          .replace(queryParameters: params);
+      final response = await http
+          .get(uri, headers: await _getAuthHeaders())
+          .timeout(timeoutDuration);
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception(
+          'Failed to load mood-based feed: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Error fetching mood-based feed: $e');
+    }
+  }
 }

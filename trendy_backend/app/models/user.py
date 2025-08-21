@@ -1,22 +1,37 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, JSON, ForeignKey
 from sqlalchemy.orm import relationship
-from app.database import Base
-from datetime import datetime
+from sqlalchemy.sql import func
+from app.db.base import Base
 
 class User(Base):
     __tablename__ = "users"
+    
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True, nullable=False)
-    username = Column(String, unique=True, index=True, nullable=False)
-    password = Column(String, nullable=False)
-    profile_image = Column(String, nullable=True)
-    avatar_url = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    posts = relationship("Post", back_populates="user")
-    comments = relationship("Comment", back_populates="owner")
-    followers = relationship("Follower", foreign_keys="[Follower.followed_id]", back_populates="followed")
-    following = relationship("Follower", foreign_keys="[Follower.follower_id]", back_populates="follower")
-    sent_messages = relationship("Message", foreign_keys="[Message.sender_id]", back_populates="sender")
-    received_messages = relationship("Message", foreign_keys="[Message.receiver_id]", back_populates="receiver")
-    groups = relationship("GroupMember", back_populates="user")
-    created_groups = relationship("Group", back_populates="creator")
+    firebase_uid = Column(String(255), unique=True, index=True, nullable=False)
+    email = Column(String(255), unique=True, index=True, nullable=False)
+    username = Column(String(50), unique=True, index=True, nullable=False)
+    display_name = Column(String(100), nullable=True)
+    bio = Column(Text, nullable=True)
+    avatar_url = Column(String(500), nullable=True)
+    phone_number = Column(String(20), nullable=True)
+    is_verified = Column(Boolean, default=False)
+    is_active = Column(Boolean, default=True)
+    is_premium = Column(Boolean, default=False)
+    subscription_tier = Column(String(50), default="free")
+    subscription_expires_at = Column(DateTime, nullable=True)
+    preferences = Column(JSON, default=dict)
+    metadata = Column(JSON, default=dict)
+    
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    last_login_at = Column(DateTime(timezone=True), nullable=True)
+    
+    # Relationships
+    posts = relationship("Post", back_populates="user", cascade="all, delete-orphan")
+    notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
+    followers = relationship("Follower", foreign_keys="Follower.follower_id", back_populates="follower_user", cascade="all, delete-orphan")
+    following = relationship("Follower", foreign_keys="Follower.following_id", back_populates="following_user", cascade="all, delete-orphan")
+    
+    def __repr__(self):
+        return f"<User(id={self.id}, username={self.username}, email={self.email})>"

@@ -29,11 +29,29 @@ android {
         multiDexEnabled = true // ✅ Add this if you get Dex errors with Firebase
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("keystore/trendy-release.keystore")
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "your_keystore_password"
+            keyAlias = System.getenv("KEY_ALIAS") ?: "trendy-key"
+            keyPassword = System.getenv("KEY_PASSWORD") ?: "your_key_password"
+        }
+    }
+
     buildTypes {
-        release {
-            signingConfig = signingConfigs.getByName("debug") // 🔐 Change for producti// 🔐 Replace with release signing for production
+        getByName("debug") {
+            isDebuggable = true
             isMinifyEnabled = false
             isShrinkResources = false
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+        }
+        
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

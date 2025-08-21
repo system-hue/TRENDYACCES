@@ -12,12 +12,16 @@ class AdsService {
   static bool _isGDPRRegion = false;
   static bool _isCCPARegion = false;
 
-  // Ad unit IDs (use test IDs for development)
+  // Ad unit IDs (use production IDs for release)
+  static const String _bannerId = 'ca-app-pub-xxxxxxxxxxxxxxxx/xxxxxxxxxx';
+  static const String _interstitialId = 'ca-app-pub-xxxxxxxxxxxxxxxx/xxxxxxxxxx';
+  static const String _rewardedId = 'ca-app-pub-xxxxxxxxxxxxxxxx/xxxxxxxxxx';
+  static const String _nativeId = 'ca-app-pub-xxxxxxxxxxxxxxxx/xxxxxxxxxx';
+
+  // Google Mobile Ads test IDs (Android). Replace with iOS IDs on iOS builds.
   static const String _testBannerId = 'ca-app-pub-3940256099942544/6300978111';
-  static const String _testInterstitialId =
-      'ca-app-pub-3940256099942544/1033173712';
-  static const String _testRewardedId =
-      'ca-app-pub-3940256099942544/5224354917';
+  static const String _testInterstitialId = 'ca-app-pub-3940256099942544/1033173712';
+  static const String _testRewardedId = 'ca-app-pub-3940256099942544/5224354917';
   static const String _testNativeId = 'ca-app-pub-3940256099942544/2247696110';
 
   static Future<void> initialize() async {
@@ -276,11 +280,11 @@ class AdsService {
   }
 }
 
-class AdWidget extends StatelessWidget {
+class AdView extends StatelessWidget {
   final Ad ad;
   final double height;
 
-  const AdWidget({Key? key, required this.ad, this.height = 50})
+  const AdView({Key? key, required this.ad, this.height = 50})
     : super(key: key);
 
   @override

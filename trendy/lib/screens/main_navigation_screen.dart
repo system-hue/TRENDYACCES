@@ -17,12 +17,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    const HomeScreen(),
-    const ExploreScreen(),
-    const CreatePostScreen(),
-    AIFeaturesScreen(),
-    const InboxScreen(),
-    const ProfileScreen(),
+    const HomeScreen(),           // Home
+    const ExploreScreen(),        // Explore (tabs for Music/Movies/Photos/Sports)
+    const CreatePostScreen(),     // Create
+    AIFeaturesScreen(),           // AI Features
+    const InboxScreen(),          // Inbox
+    const ProfileScreen(),        // Profile
   ];
 
   @override
@@ -43,27 +43,27 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.music_note_outlined),
-            selectedIcon: Icon(Icons.music_note),
-            label: 'Music',
+            icon: Icon(Icons.explore_outlined),
+            selectedIcon: Icon(Icons.explore),
+            label: 'Explore',
           ),
           NavigationDestination(
-            icon: Icon(Icons.movie_outlined),
-            selectedIcon: Icon(Icons.movie),
-            label: 'Movies',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.sports_outlined),
-            selectedIcon: Icon(Icons.sports),
-            label: 'Sports',
+            icon: Icon(Icons.add_circle_outline),
+            selectedIcon: Icon(Icons.add_circle),
+            label: 'Create',
           ),
           NavigationDestination(
             icon: Icon(Icons.auto_fix_high_outlined),
             selectedIcon: Icon(Icons.auto_fix_high),
-            label: 'AI Features',
+            label: 'AI',
           ),
           NavigationDestination(
-            icon: Icon(Icons.person_outlined),
+            icon: Icon(Icons.inbox_outlined),
+            selectedIcon: Icon(Icons.inbox),
+            label: 'Inbox',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
             selectedIcon: Icon(Icons.person),
             label: 'Profile',
           ),

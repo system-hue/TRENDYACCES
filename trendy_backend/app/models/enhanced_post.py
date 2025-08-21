@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, Float, 
 from sqlalchemy.sql import func
 from app.database import Base
 
-class EnhancedPost(Base:
+class EnhancedPost(Base):
     __tablename__ = "enhanced_posts"
     
     id = Column(Integer, primary_key=True, index=True)
