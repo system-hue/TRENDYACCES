@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, JSON, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, JSON, ForeignKey, Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.db.base import Base
@@ -20,7 +20,7 @@ class User(Base):
     subscription_tier = Column(String(50), default="free")
     subscription_expires_at = Column(DateTime, nullable=True)
     preferences = Column(JSON, default=dict)
-    metadata = Column(JSON, default=dict)
+    user_metadata = Column(JSON, default=dict)
     
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -32,6 +32,10 @@ class User(Base):
     notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
     followers = relationship("Follower", foreign_keys="Follower.follower_id", back_populates="follower_user", cascade="all, delete-orphan")
     following = relationship("Follower", foreign_keys="Follower.following_id", back_populates="following_user", cascade="all, delete-orphan")
+    subscriptions = relationship("Subscription", back_populates="user", cascade="all, delete-orphan")
+    payments = relationship("Payment", back_populates="user", cascade="all, delete-orphan")
+    ad_impressions = relationship("AdImpression", back_populates="user", cascade="all, delete-orphan")
+    ad_revenue_records = relationship("UserAdRevenue", back_populates="user", cascade="all, delete-orphan")
     
     def __repr__(self):
         return f"<User(id={self.id}, username={self.username}, email={self.email})>"

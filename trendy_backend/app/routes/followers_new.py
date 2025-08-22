@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
 from app.models.follower import Follower
-from app.auth.jwt_handler import get_current_user
+from app.auth.middleware import get_current_user_id
 
 router = APIRouter(prefix="/users", tags=["Followers"])
 
@@ -11,7 +11,7 @@ router = APIRouter(prefix="/users", tags=["Followers"])
 def follow_user(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user_id: int = Depends(get_current_user)
+    current_user_id: int = Depends(get_current_user_id)
 ):
     """Follow a user"""
     if user_id == current_user_id:
@@ -51,7 +51,7 @@ def follow_user(
 def unfollow_user(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user_id: int = Depends(get_current_user)
+    current_user_id: int = Depends(get_current_user_id)
 ):
     """Unfollow a user"""
     follow = db.query(Follower).filter(
@@ -125,7 +125,7 @@ def is_following(
     user_id: int,
     target_user_id: int,
     db: Session = Depends(get_db),
-    current_user_id: int = Depends(get_current_user)
+    current_user_id: int = Depends(get_current_user_id)
 ):
     """Check if current user is following target user"""
     follow = db.query(Follower).filter(

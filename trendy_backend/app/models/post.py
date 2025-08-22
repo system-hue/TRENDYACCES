@@ -40,6 +40,7 @@ class Post(Base):
     user = relationship("User", back_populates="posts")
     likes = relationship("Like", back_populates="post", cascade="all, delete-orphan")
     comments = relationship("Comment", back_populates="post", cascade="all, delete-orphan")
+    ad_impressions = relationship("AdImpression", back_populates="post", cascade="all, delete-orphan")
     
     def __repr__(self):
         return f"<Post(id={self.id}, user_id={self.user_id}, content={self.content[:50]}...)>"

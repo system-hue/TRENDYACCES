@@ -8,10 +8,10 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from datetime import datetime
 
-from app.db.database import get_db
+from app.database import get_db
 from app.models.user import User
 from app.models.user_relationships import Follow, UserBlock
-from app.auth.jwt import get_current_user
+from app.auth.middleware import get_current_user
 
 router = APIRouter(prefix="/users/relationships", tags=["user-relationships"])
 

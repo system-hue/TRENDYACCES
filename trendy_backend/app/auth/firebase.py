@@ -1,3 +1,8 @@
+"""
+Firebase Authentication Utilities for TRENDY App
+DEPRECATED - Use app.auth.middleware instead for unified authentication
+"""
+
 import firebase_admin
 from firebase_admin import credentials, auth
 from fastapi import HTTPException, Security, Depends

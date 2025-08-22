@@ -1,3 +1,8 @@
+"""
+JWT Handler for TRENDY App
+DEPRECATED - Use app.auth.middleware instead for unified Firebase authentication
+"""
+
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from fastapi import HTTPException, Depends, status
