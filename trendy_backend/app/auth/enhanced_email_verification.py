@@ -8,7 +8,7 @@ import os
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
-from app.auth.jwt import create_access_token
+from app.auth.jwt_handler import create_access_token
 
 router = APIRouter(prefix="/auth/email", tags=["Email Verification"])
 

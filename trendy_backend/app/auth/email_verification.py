@@ -12,10 +12,10 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-from app.db.database import get_db
+from app.database import get_db
 from app.models.user import User
 from app.core.config import settings
-from app.auth.jwt import create_access_token
+from app.auth.jwt_handler import create_access_token
 
 router = APIRouter(prefix="/auth/email", tags=["email-verification"])
 

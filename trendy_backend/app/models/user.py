@@ -20,7 +20,7 @@ class User(Base):
     subscription_tier = Column(String(50), default="free")
     subscription_expires_at = Column(DateTime, nullable=True)
     preferences = Column(JSON, default=dict)
-    metadata = Column(JSON, default=dict)
+    extract_metadata = Column(JSON, default=dict)
     
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())

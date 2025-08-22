@@ -5,3 +5,8 @@ def detect_offensive_content(text: str) -> bool:
         if word in text.lower():
             return True
     return False
+
+
+
+
+
