@@ -13,8 +13,9 @@ import secrets
 
 from app.database import get_db
 from app.models.user import User
-from app.core.config import settings
-from app.auth.jwt import create_access_token
+from app.core.config import get_settings
+settings = get_settings()
+from app.auth.jwt_handler import create_access_token
 
 router = APIRouter(prefix="/auth/social", tags=["social-auth"])
 

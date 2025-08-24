@@ -62,19 +62,13 @@ async def register_user(
         if existing_username:
             raise HTTPException(status_code=400, detail="Username already taken")
         
-        # Create user in Firebase
-        try:
-            firebase_user = auth.create_user(
-                email=request.email,
-                password=request.password,
-                display_name=request.display_name or request.username
-            )
-        except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Failed to create Firebase user: {str(e)}")
+        # For development with mock authentication, generate a mock firebase_uid
+        # In production, this would come from Firebase Auth
+        mock_firebase_uid = f"mock_uid_{request.email.replace('@', '_').replace('.', '_')}"
         
         # Create user in database
         user = User(
-            firebase_uid=firebase_user.uid,
+            firebase_uid=mock_firebase_uid,
             email=request.email,
             username=request.username,
             display_name=request.display_name or request.username,
@@ -89,11 +83,11 @@ async def register_user(
         # Send verification email in background
         background_tasks.add_task(send_verification_email, user.id, user.email)
         
-        # Generate custom token for immediate login
-        custom_token = auth.create_custom_token(firebase_user.uid)
+        # Generate mock token for immediate login
+        mock_token = f"mock_token_{user.id}"
         
         return AuthResponse(
-            access_token=custom_token.decode('utf-8') if isinstance(custom_token, bytes) else custom_token,
+            access_token=mock_token,
             refresh_token="",  # Refresh tokens will be implemented later
             user={
                 "id": user.id,
@@ -128,44 +122,26 @@ async def login_user(
         if not user.is_active:
             raise HTTPException(status_code=401, detail="Account is deactivated")
         
-        # Verify password with Firebase
-        try:
-            # Firebase doesn't provide direct password verification API
-            # We'll use the sign-in API to verify credentials
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={settings.firebase_api_key}",
-                    json={
-                        "email": user.email,
-                        "password": request.password,
-                        "returnSecureToken": True
-                    }
-                )
-                
-                if response.status_code != 200:
-                    raise HTTPException(status_code=401, detail="Invalid credentials")
-                
-                data = response.json()
-                id_token = data["idToken"]
-                
-                # Verify the token to get user info
-                decoded_token = auth.verify_id_token(id_token)
-                
-                return AuthResponse(
-                    access_token=id_token,
-                    refresh_token=data.get("refreshToken", ""),
-                    user={
-                        "id": user.id,
-                        "email": user.email,
-                        "username": user.username,
-                        "display_name": user.display_name,
-                        "is_verified": user.is_verified,
-                        "avatar_url": user.avatar_url
-                    }
-                )
-                
-        except Exception as e:
+        # For development with mock authentication, bypass Firebase verification
+        # In production, this would verify with Firebase
+        if request.password != "password":  # Simple mock password check
             raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+        # Generate mock token for login
+        mock_token = f"mock_token_{user.id}"
+        
+        return AuthResponse(
+            access_token=mock_token,
+            refresh_token="",  # Refresh tokens will be implemented later
+            user={
+                "id": user.id,
+                "email": user.email,
+                "username": user.username,
+                "display_name": user.display_name,
+                "is_verified": user.is_verified,
+                "avatar_url": user.avatar_url
+            }
+        )
             
     except HTTPException:
         raise

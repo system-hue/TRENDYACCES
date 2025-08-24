@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -436,21 +435,22 @@ class ApiService {
     }
   }
 
-  // AI Features API (used by AIFeaturesScreen)
+  // AI Features API
   static Future<Map<String, dynamic>> translateText({
     required String text,
     required String targetLanguage,
+    String sourceLanguage = "auto",
   }) async {
     try {
       final uri = Uri.parse('$baseUrl/api/ai/translate');
       final response = await http
           .post(
             uri,
-            headers: _getHeaders(),
+            headers: await _getAuthHeaders(),
             body: json.encode({
               'text': text,
               'target_language': targetLanguage,
-              'source_language': 'auto',
+              'source_language': sourceLanguage,
             }),
           )
           .timeout(timeoutDuration);
@@ -458,10 +458,34 @@ class ApiService {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        throw Exception('Failed to translate: ${response.statusCode}');
+        throw Exception('Failed to translate text: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error translating: $e');
+      throw Exception('Error translating text: $e');
+    }
+  }
+
+  static Future<Map<String, dynamic>> translatePost({
+    required String postId,
+    required String targetLanguage,
+  }) async {
+    try {
+      final uri = Uri.parse('$baseUrl/api/ai/posts/$postId/translate');
+      final response = await http
+          .post(
+            uri,
+            headers: await _getAuthHeaders(),
+            body: json.encode({'target_language': targetLanguage}),
+          )
+          .timeout(timeoutDuration);
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to translate post: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error translating post: $e');
     }
   }
 
@@ -471,7 +495,7 @@ class ApiService {
       final response = await http
           .post(
             uri,
-            headers: _getHeaders(),
+            headers: await _getAuthHeaders(),
             body: json.encode({'text': text}),
           )
           .timeout(timeoutDuration);
@@ -486,13 +510,63 @@ class ApiService {
     }
   }
 
+  static Future<Map<String, dynamic>> getMoodBasedFeed({
+    String preferredMood = "happy",
+    int limit = 20,
+  }) async {
+    try {
+      final params = {
+        'preferred_mood': preferredMood,
+        'limit': limit.toString(),
+      };
+
+      final uri = Uri.parse(
+        '$baseUrl/api/ai/feed/mood-based',
+      ).replace(queryParameters: params);
+      final response = await http
+          .get(uri, headers: await _getAuthHeaders())
+          .timeout(timeoutDuration);
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception(
+          'Failed to load mood-based feed: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Error fetching mood-based feed: $e');
+    }
+  }
+
+  static Future<Map<String, dynamic>> suggestEdits(String text) async {
+    try {
+      final uri = Uri.parse('$baseUrl/api/ai/smart-edit/suggest');
+      final response = await http
+          .post(
+            uri,
+            headers: await _getAuthHeaders(),
+            body: json.encode({'text': text}),
+          )
+          .timeout(timeoutDuration);
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to suggest edits: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error suggesting edits: $e');
+    }
+  }
+
   static Future<Map<String, dynamic>> autoEditText(String text) async {
     try {
       final uri = Uri.parse('$baseUrl/api/ai/smart-edit/auto');
       final response = await http
           .post(
             uri,
-            headers: _getHeaders(),
+            headers: await _getAuthHeaders(),
             body: json.encode({'text': text}),
           )
           .timeout(timeoutDuration);
@@ -507,31 +581,89 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>> getMoodBasedFeed({
-    required String preferredMood,
-    int limit = 20,
-  }) async {
+  static Future<Map<String, dynamic>> autoEditPost(String postId) async {
     try {
-      final params = {
-        'preferred_mood': preferredMood,
-        'limit': limit.toString(),
-      };
-
-      final uri = Uri.parse('$baseUrl/api/ai/feed/mood-based')
-          .replace(queryParameters: params);
+      final uri = Uri.parse('$baseUrl/api/ai/posts/$postId/auto-edit');
       final response = await http
-          .get(uri, headers: await _getAuthHeaders())
+          .post(uri, headers: await _getAuthHeaders())
           .timeout(timeoutDuration);
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        throw Exception(
-          'Failed to load mood-based feed: ${response.statusCode}',
-        );
+        throw Exception('Failed to auto-edit post: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error fetching mood-based feed: $e');
+      throw Exception('Error auto-editing post: $e');
+    }
+  }
+
+  static Future<List<String>> getSupportedLanguages() async {
+    try {
+      final uri = Uri.parse('$baseUrl/api/ai/languages');
+      final response = await http
+          .get(uri, headers: await _getAuthHeaders())
+          .timeout(timeoutDuration);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return List<String>.from(
+          data['languages'].map((lang) => '${lang['code']}:${lang['name']}'),
+        );
+      } else {
+        throw Exception('Failed to load languages: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching languages: $e');
+    }
+  }
+
+  static Future<List<String>> getSupportedMoods() async {
+    try {
+      final uri = Uri.parse('$baseUrl/api/ai/moods');
+      final response = await http
+          .get(uri, headers: await _getAuthHeaders())
+          .timeout(timeoutDuration);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return List<String>.from(data['moods']);
+      } else {
+        throw Exception('Failed to load moods: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching moods: $e');
+    }
+  }
+
+  // Social Auth API
+  static Future<bool> registerSocialUser(
+    String uid,
+    String displayName,
+    String email,
+    String provider,
+    String accessToken,
+  ) async {
+    try {
+      final uri = Uri.parse('$baseUrl/api/auth/social/register');
+      final response = await http
+          .post(
+            uri,
+            headers: _getHeaders(),
+            body: json.encode({
+              'uid': uid,
+              'display_name': displayName,
+              'email': email,
+              'provider': provider,
+              'access_token': accessToken,
+            }),
+          )
+          .timeout(timeoutDuration);
+
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      print('Error registering social user: $e');
+      return false;
     }
   }
 }

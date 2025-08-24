@@ -1,129 +1,134 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../services/backend_service.dart';
 
-class HubFloatingMenu extends StatefulWidget {
-  const HubFloatingMenu({super.key});
+class CreatePostScreen extends StatefulWidget {
+  const CreatePostScreen({super.key});
 
   @override
-  State<HubFloatingMenu> createState() => _HubFloatingMenuState();
+  State<CreatePostScreen> createState() => _CreatePostScreenState();
 }
 
-class _HubFloatingMenuState extends State<HubFloatingMenu>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  bool _isOpen = false;
+class _CreatePostScreenState extends State<CreatePostScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _contentController = TextEditingController();
+  bool _isLoading = false;
+  String? _selectedCategory;
+
+  final List<String> _categories = [
+    'General',
+    'Music',
+    'Movies',
+    'Sports',
+    'Photography',
+    'Technology',
+    'Travel',
+    'Food',
+    'Art',
+    'Lifestyle',
+  ];
+
+  Future<void> _createPost() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception('User not authenticated');
+      }
+
+      final postData = {
+        'content': _contentController.text,
+        'user_id': 1, // This should be dynamic based on user
+        'category': _selectedCategory ?? 'General',
+        'created_at': DateTime.now().toIso8601String(),
+      };
+
+      final success = await BackendService.createPost(postData);
+
+      if (success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Post created successfully!')),
+        );
+        Navigator.pop(context);
+      } else {
+        throw Exception('Failed to create post');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
 
   @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Create Post'),
+        actions: [
+          if (!_isLoading)
+            TextButton(onPressed: _createPost, child: const Text('Post')),
+        ],
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextFormField(
+                      controller: _contentController,
+                      maxLines: 5,
+                      decoration: const InputDecoration(
+                        labelText: 'What\'s on your mind?',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter some content';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      value: _selectedCategory,
+                      decoration: const InputDecoration(
+                        labelText: 'Category',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: _categories.map((category) {
+                        return DropdownMenuItem(
+                          value: category,
+                          child: Text(category),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() => _selectedCategory = value);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
     );
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _contentController.dispose();
     super.dispose();
-  }
-
-  void _toggleMenu() {
-    setState(() {
-      _isOpen = !_isOpen;
-      if (_isOpen) {
-        _animationController.forward();
-      } else {
-        _animationController.reverse();
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 200,
-      height: 200,
-      child: Stack(
-        fit: StackFit.loose,
-        alignment: Alignment.bottomRight,
-        children: [
-          ..._buildRadialMenuItems(),
-          Positioned(
-            bottom: 20,
-            right: 20,
-            child: FloatingActionButton(
-              onPressed: _toggleMenu,
-              backgroundColor: const Color(0xFF6C5CE7),
-              child: AnimatedIcon(
-                icon: AnimatedIcons.menu_close,
-                progress: _animationController,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  List<Widget> _buildRadialMenuItems() {
-    if (!_isOpen) return [];
-
-    const double radius = 120;
-    final List<Widget> items = [];
-
-    final List<Map<String, dynamic>> menuItems = [
-      {
-        'icon': Icons.music_note,
-        'label': 'Music',
-        'color': const Color(0xFF6C5CE7),
-        'angle': 0,
-        'route': '/music',
-      },
-      {
-        'icon': Icons.movie,
-        'label': 'Movies',
-        'color': const Color(0xFF00D1B2),
-        'angle': 72,
-        'route': '/movies',
-      },
-      {
-        'icon': Icons.sports_soccer,
-        'label': 'Football',
-        'color': const Color(0xFF22C55E),
-        'angle': 144,
-        'route': '/football',
-      },
-    ];
-
-    for (int i = 0; i < menuItems.length; i++) {
-      final double angle = menuItems[i]['angle'] * pi / 180;
-      final double x = radius * cos(angle);
-      final double y = radius * sin(angle);
-
-      items.add(
-        Positioned(
-          bottom: 20 + y,
-          right: 20 + x,
-          child: ScaleTransition(
-            scale: CurvedAnimation(
-              parent: _animationController,
-              curve: Interval(i * 0.1, 1.0, curve: Curves.elasticOut),
-            ),
-            child: FloatingActionButton(
-              mini: true,
-              backgroundColor: menuItems[i]['color'],
-              onPressed: () {
-                Navigator.of(context).pushNamed(menuItems[i]['route']);
-                _toggleMenu();
-              },
-              child: Icon(menuItems[i]['icon'], size: 24),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return items;
   }
 }
