@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     spotify_client_secret: str = Field(default="your_spotify_client_secret_here", env="SPOTIFY_CLIENT_SECRET")
     tmdb_api_key: str = Field(default="your_tmdb_api_key_here", env="TMDB_API_KEY")
     
+    # Social OAuth
+    google_client_id: str = Field(default="your_google_client_id", env="GOOGLE_CLIENT_ID")
+    facebook_client_id: str = Field(default="your_facebook_client_id", env="FACEBOOK_CLIENT_ID")
+    facebook_client_secret: str = Field(default="your_facebook_client_secret", env="FACEBOOK_CLIENT_SECRET")
+    
     # Payment Providers
     stripe_secret_key: str = Field(default="sk_test_your_stripe_secret_key_here", env="STRIPE_SECRET_KEY")
     stripe_webhook_secret: str = Field(default="whsec_your_webhook_secret_here", env="STRIPE_WEBHOOK_SECRET")

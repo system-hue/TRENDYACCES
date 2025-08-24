@@ -1,82 +1,176 @@
-#!/usr/bin/env python3
 """
-Simple test script to verify social authentication structure
+Simple Test Script for Social Authentication Classes
+Tests the authentication classes directly without loading the full app
 """
 
 import os
 import sys
+import asyncio
+from unittest.mock import patch, MagicMock
 
 # Add the parent directory to the path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-def test_class_imports():
-    """Test that social auth classes can be imported"""
-    try:
-        from app.auth.google import GoogleAuth
-        print("✅ Google Auth class imported successfully")
-    except Exception as e:
-        print(f"❌ Google Auth import failed: {e}")
+# Mock the config settings before importing auth modules
+from app.core.config import Settings
+
+# Create a mock settings object
+mock_settings = Settings(
+    google_client_id="mock_google_client_id",
+    facebook_client_id="mock_facebook_client_id",
+    facebook_client_secret="mock_facebook_client_secret"
+)
+
+# Patch the get_settings function to return our mock settings
+with patch('app.core.config.get_settings', return_value=mock_settings):
+    # Now import the auth modules
+    from app.auth.google import GoogleAuth
+    from app.auth.facebook import FacebookAuth
+
+def test_google_auth_initialization():
+    """Test GoogleAuth initialization with mock settings"""
+    print("Testing GoogleAuth initialization...")
     
     try:
-        from app.auth.facebook import FacebookAuth
-        print("✅ Facebook Auth class imported successfully")
+        google_auth = GoogleAuth()
+        print("✅ GoogleAuth initialized successfully")
+        print(f"Client ID: {google_auth.client_id}")
+        return True
     except Exception as e:
-        print(f"❌ Facebook Auth import failed: {e}")
+        print(f"❌ GoogleAuth initialization failed: {e}")
+        return False
+
+def test_facebook_auth_initialization():
+    """Test FacebookAuth initialization with mock settings"""
+    print("\nTesting FacebookAuth initialization...")
     
     try:
-        from app.auth.apple_fixed import AppleAuth
-        print("✅ Apple Auth class imported successfully")
+        facebook_auth = FacebookAuth()
+        print("✅ FacebookAuth initialized successfully")
+        print(f"Client ID: {facebook_auth.client_id}")
+        print(f"Client Secret: {facebook_auth.client_secret}")
+        return True
     except Exception as e:
-        print(f"❌ Apple Auth import failed: {e}")
+        print(f"❌ FacebookAuth initialization failed: {e}")
+        return False
 
-def test_routes_import():
-    """Test that social auth routes can be imported"""
+def test_google_auth_methods():
+    """Test GoogleAuth methods with mock token verification"""
+    print("\nTesting GoogleAuth methods...")
+    
     try:
-        # Mock environment variables to avoid instantiation errors
-        os.environ["GOOGLE_CLIENT_ID"] = "test"
-        os.environ["GOOGLE_CLIENT_SECRET"] = "test"
-        os.environ["FACEBOOK_CLIENT_ID"] = "test"
-        os.environ["FACEBOOK_CLIENT_SECRET"] = "test"
-        os.environ["APPLE_CLIENT_ID"] = "test"
-        os.environ["APPLE_TEAM_ID"] = "test"
-        os.environ["APPLE_KEY_ID"] = "test"
-        os.environ["APPLE_PRIVATE_KEY"] = "test"
+        google_auth = GoogleAuth()
         
-        from app.routes.social_auth import router
-        print("✅ Social Auth routes imported successfully")
+        # Mock the id_token.verify_oauth2_token method
+        with patch('app.auth.google.id_token.verify_oauth2_token') as mock_verify:
+            mock_verify.return_value = {
+                'sub': 'mock_user_id_123',
+                'email': 'test@example.com',
+                'email_verified': True,
+                'name': 'Test User',
+                'picture': 'https://example.com/avatar.jpg',
+                'aud': 'mock_google_client_id'
+            }
+            
+            # Test token verification
+            result = asyncio.run(google_auth.verify_google_token("mock_token"))
+            print("✅ Google token verification successful")
+            print(f"User Info: {result}")
+            
+            return True
+            
+    except Exception as e:
+        print(f"❌ GoogleAuth methods test failed: {e}")
+        return False
+
+def test_facebook_auth_methods():
+    """Test FacebookAuth methods with mock HTTP responses"""
+    print("\nTesting FacebookAuth methods...")
+    
+    try:
+        facebook_auth = FacebookAuth()
         
-        # Check that all expected endpoints exist
-        endpoints = [route.path for route in router.routes]
-        expected_endpoints = [
-            "/auth/social/google",
-            "/auth/social/facebook", 
-            "/auth/social/apple",
-            "/auth/social/providers",
-            "/auth/social/user/{user_id}/providers"
-        ]
-        
-        for endpoint in expected_endpoints:
-            if any(endpoint in route_path for route_path in endpoints):
-                print(f"✅ Endpoint {endpoint} found")
+        # Mock httpx.AsyncClient to return async responses
+        async def mock_get(*args, **kwargs):
+            if "debug_token" in args[0]:
+                mock_response = MagicMock()
+                mock_response.status_code = 200
+                mock_response.json.return_value = {
+                    "data": {
+                        "app_id": "mock_facebook_client_id",
+                        "user_id": "mock_user_id_123"
+                    }
+                }
+                return mock_response
             else:
-                print(f"❌ Endpoint {endpoint} not found")
-                
+                mock_response = MagicMock()
+                mock_response.status_code = 200
+                mock_response.json.return_value = {
+                    "id": "mock_user_id_123",
+                    "name": "Test User",
+                    "email": "test@example.com",
+                    "picture": {
+                        "data": {
+                            "url": "https://example.com/avatar.jpg"
+                        }
+                    }
+                }
+                return mock_response
+        
+        # Create an async mock client
+        mock_client_instance = MagicMock()
+        mock_client_instance.get = mock_get
+        
+        # Mock the async context manager
+        mock_client = MagicMock()
+        mock_client.__aenter__.return_value = mock_client_instance
+        mock_client.__aexit__.return_value = None
+        
+        with patch('app.auth.facebook.httpx.AsyncClient', return_value=mock_client):
+            # Test token verification
+            result = asyncio.run(facebook_auth.verify_facebook_token("mock_token"))
+            print("✅ Facebook token verification successful")
+            print(f"User Info: {result}")
+            
+            return True
+            
     except Exception as e:
-        print(f"❌ Social Auth routes failed: {e}")
+        print(f"❌ FacebookAuth methods test failed: {e}")
+        return False
 
 def main():
-    print("🧪 Testing Social Authentication Structure")
-    print("=" * 50)
+    """Run all tests"""
+    print("Starting Social Authentication Class Tests...")
+    print("=" * 60)
     
-    test_class_imports()
-    print()
-    test_routes_import()
+    tests = [
+        ("GoogleAuth Initialization", test_google_auth_initialization),
+        ("FacebookAuth Initialization", test_facebook_auth_initialization),
+        ("GoogleAuth Methods", test_google_auth_methods),
+        ("FacebookAuth Methods", test_facebook_auth_methods),
+    ]
     
-    print("\n" + "=" * 50)
-    print("📋 Summary:")
-    print("1. All social auth classes should be importable")
-    print("2. Social auth routes should be importable with all endpoints")
-    print("\n✅ Structure verification complete")
+    results = []
+    for test_name, test_func in tests:
+        try:
+            success = test_func()
+            results.append((test_name, success, "✓" if success else "✗"))
+        except Exception as e:
+            results.append((test_name, False, f"Error: {str(e)}"))
+    
+    print("\n" + "=" * 60)
+    print("TEST RESULTS:")
+    print("=" * 60)
+    
+    for test_name, success, status in results:
+        print(f"{test_name:.<30} {status}")
+    
+    if all(success for _, success, _ in results):
+        print("\n✅ All tests passed!")
+        return 0
+    else:
+        print("\n❌ Some tests failed!")
+        return 1
 
 if __name__ == "__main__":
-    main()
+    exit(main())

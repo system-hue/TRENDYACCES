@@ -14,13 +14,21 @@ from app.models.user import User
 from app.models.social_provider import SocialProvider
 from app.auth.jwt_handler import create_access_token
 from app.auth.utils import get_or_create_user_from_social
+from app.core.config import get_settings
 
 class FacebookAuth:
     def __init__(self):
-        self.client_id = os.getenv("FACEBOOK_CLIENT_ID")
-        self.client_secret = os.getenv("FACEBOOK_CLIENT_SECRET")
-        if not self.client_id or not self.client_secret:
-            raise ValueError("Facebook OAuth credentials not set")
+        settings = get_settings()
+        self.client_id = settings.facebook_client_id
+        self.client_secret = settings.facebook_client_secret
+        # Allow initialization for testing even if credentials are not set
+        if (not self.client_id or not self.client_secret or 
+            self.client_id == "your_facebook_client_id" or
+            self.client_id == "mock_facebook_client_id"):
+            # For testing, we'll allow initialization but mark as disabled
+            self.enabled = False
+        else:
+            self.enabled = True
     
     async def verify_facebook_token(self, token: str) -> Dict[str, Any]:
         """

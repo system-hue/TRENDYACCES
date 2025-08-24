@@ -11,7 +11,7 @@ from typing import List, Optional
 from app.database import get_db
 from app.models.user_relationships import UserRelationship, UserBlock, UserMute, RelationshipType
 from app.models.user import User
-from app.auth.jwt_handler import get_current_user
+from app.auth.middleware import get_current_user
 
 router = APIRouter(prefix="/users", tags=["user-relationships"])
 

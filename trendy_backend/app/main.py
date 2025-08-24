@@ -17,7 +17,8 @@ from .routes import (
     ads,
     revenue_analytics
 )
-from .auth import social_auth, email_verification
+from .auth import email_verification
+from .routes import social_auth
 from .api import (
     movies,
     music,
