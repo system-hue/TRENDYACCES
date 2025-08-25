@@ -45,6 +45,8 @@ dependencies:
   flutter_dotenv: ^5.1.0
   email_validator: ^2.1.17
   logger: ^1.0.0  # Added logger package
+  intl: ^0.20.2
+  geolocator: ^12.0.0
 
 dev_dependencies:
   flutter_test:

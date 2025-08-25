@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:trendy/services/ads_service.dart';
+import 'package:trendy/services/ads_service.dart' hide AdWidget;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
