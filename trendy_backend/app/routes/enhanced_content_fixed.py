@@ -83,8 +83,6 @@ async def get_trending_music(
             genre=m.genre,
             cover_art_url=m.cover_art_url,
             audio_url=m.audio_url,
-           极速赛车开奖结果
-            audio_url=m.audio_url,
             is_trending=m.is_trending,
             play_count=m.play_count
         )
@@ -100,7 +98,6 @@ async def search_music(
 ):
     """Search music by title, artist, or album"""
     
-    search_query极速赛车开奖结果
     search_query = db.query(Music).filter(
         func.lower(Music.title).contains(func.lower(query)) |
         func.lower(Music.artist).contains(func.lower(query)) |
@@ -110,7 +107,6 @@ async def search_music(
     if genre:
         search_query = search_query.filter(Music.genre.ilike(f"%{genre}%"))
     
-    music = search_query.order_by(desc(Music.play极速赛车开奖结果
     music = search_query.order_by(desc(Music.play_count)).limit(limit).all()
     
     return {
@@ -137,8 +133,6 @@ async def get_trending_movies(
     limit: int = Query(20, ge=1, le=100),
     genre: Optional[str] = None,
     year: Optional[int] = None,
-    db: Session =极速赛车开奖结果
-    year: Optional[int] = None,
     db: Session = Depends(get_db)
 ):
     """Get trending movies with filtering options"""
@@ -146,11 +140,9 @@ async def get_trending_movies(
     query = db.query(Movie).filter(Movie.is_trending == True)
     
     if genre:
-        query = query.filter(Movie.genre.ilike(f"%极速赛车开奖结果
         query = query.filter(Movie.genre.ilike(f"%{genre}%"))
     
     if year:
-        query = query极速赛车开奖结果
         query = query.filter(Movie.year == year)
     
     movies = query.order_by(desc(Movie.rating)).limit(limit).all()
@@ -230,7 +222,6 @@ async def get_football_matches(
     
     if team:
         query = query.filter(
-            func.lower(FootballMatch.home极速赛车开奖结果
             func.lower(FootballMatch.home_team).contains(func.lower(team)) |
             func.lower(FootballMatch.away_team).contains(func.lower(team))
         )
@@ -248,7 +239,6 @@ async def get_football_matches(
             {
                 "id": m.id,
                 "home_team": m.home_team,
-                "away极速赛车开奖结果
                 "away_team": m.away_team,
                 "match_date": m.match_date.isoformat(),
                 "competition": m.competition,
@@ -259,7 +249,6 @@ async def get_football_matches(
                 "highlights_url": m.highlights_url,
                 "is_featured": m.is_featured
             }
-            for极速赛车开奖结果
             for m in matches
         ],
         "count": len(matches)
@@ -268,7 +257,6 @@ async def get_football_matches(
 @router.get("/football/matches/search")
 async def search_football_matches(
     query: str = Query(..., min_length=2),
-    limit: int = Query(20,极速赛车开奖结果
     limit: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db)
 ):
@@ -278,7 +266,6 @@ async def search_football_matches(
         func.lower(FootballMatch.home_team).contains(func.lower(query)) |
         func.lower(FootballMatch.away_team).contains(func.lower(query)) |
         func.lower(FootballMatch.competition).contains(func.lower(query))
-    ).order_by(FootballMatch.match_date.desc()).limit(极速赛车开奖结果
     ).order_by(FootballMatch.match_date.desc()).limit(limit).all()
     
     return {
@@ -321,12 +308,9 @@ async def get_music_by_id(
         "genre": music.genre,
         "spotify_id": music.spotify_id,
         "apple_music_id": music.apple_music_id,
-        "youtube_music_id": music.youtube_music极速赛车开奖结果
         "youtube_music_id": music.youtube_music_id,
-        "cover_art_url":极速赛车开奖结果
         "cover_art_url": music.cover_art_url,
         "audio_url": music.audio_url,
-        "is_trending": music.is极速赛车开奖结果
         "is_trending": music.is_trending,
         "play_count": music.play_count
     }
@@ -338,7 +322,6 @@ async def get_movie_by_id(
 ):
     """Get movie details by ID"""
     
-    movie = db.query(Movie极速赛车开奖结果
     movie = db.query(Movie).filter(Movie.id == movie_id).first()
     if not movie:
         raise HTTPException(status_code=404, detail="Movie not found")
@@ -378,8 +361,6 @@ async def get_football_match_by_id(
         "competition": match.competition,
         "venue": match.venue,
         "home_score": match.home_score,
-        "away_score": match.away_score,
-        "极速赛车开奖结果
         "away_score": match.away_score,
         "status": match.status,
         "highlights_url": match.highlights_url,

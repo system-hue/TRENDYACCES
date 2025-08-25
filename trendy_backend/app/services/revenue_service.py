@@ -14,7 +14,7 @@ from app.models.revenue_analytics import (
     RevenueStream, CreatorEarnings, PlatformRevenue, ContentEarnings, PayoutTransaction
 )
 from app.models.ad_impression import AdImpression, AdRevenueSummary, UserAdRevenue
-from app.models.subscription import Subscription, Payment
+from app.models.subscription_corrected import Subscription, Payment
 from app.models.user import User
 from app.core.config import get_settings
 

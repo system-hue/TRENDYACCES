@@ -2,7 +2,8 @@ import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from prometheus_client import Counter, Histogram, Gauge
-from app.core.config import settings
+from app.core.config import get_settings
+settings = get_settings()
 from app.core.logging import get_logger
 
 logger = get_logger(__name__)

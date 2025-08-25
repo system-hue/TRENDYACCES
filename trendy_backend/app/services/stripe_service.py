@@ -4,7 +4,7 @@ from typing import Dict, Optional, List
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from app.models.user import User
-from app.models.subscription import Subscription, Payment
+from app.models.subscription_corrected import Subscription, Payment
 from app.core.config import get_settings
 
 class StripeService:

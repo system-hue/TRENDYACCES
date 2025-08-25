@@ -55,7 +55,7 @@ class _FloatingRadialMenuState extends State<FloatingRadialMenu>
       children: [
         // Radial menu items
         ..._buildRadialMenuItems(),
-        
+
         // Main FAB
         FloatingActionButton(
           onPressed: _toggleMenu,

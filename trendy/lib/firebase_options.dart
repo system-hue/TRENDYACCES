@@ -44,38 +44,38 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'YOUR-WEB-API-KEY',
-    appId: 'YOUR-WEB-APP-ID',
-    messagingSenderId: 'YOUR-MESSAGING-SENDER-ID',
-    projectId: 'YOUR-PROJECT-ID',
-    authDomain: 'YOUR-AUTH-DOMAIN',
-    storageBucket: 'YOUR-STORAGE-BUCKET',
-    measurementId: 'YOUR-MEASUREMENT-ID',
+    apiKey: 'AIzaSyBb-0MsyxpID3b8WRAyiDwDlgY19TUETEg',
+    appId: '1:818367989466:web:your-web-app-id',
+    messagingSenderId: '818367989466',
+    projectId: 'trendy-83364',
+    authDomain: 'trendy-83364.firebaseapp.com',
+    storageBucket: 'trendy-83364.firebasestorage.app',
+    measurementId: 'G-YOUR-MEASUREMENT-ID',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'YOUR-ANDROID-API-KEY',
-    appId: 'YOUR-ANDROID-APP-ID',
-    messagingSenderId: 'YOUR-MESSAGING-SENDER-ID',
-    projectId: 'YOUR-PROJECT-ID',
-    storageBucket: 'YOUR-STORAGE-BUCKET',
+    apiKey: 'AIzaSyBb-0MsyxpID3b8WRAyiDwDlgY19TUETEg',
+    appId: '1:818367989466:android:1de8d15f17ac11f7d9c7e3',
+    messagingSenderId: '818367989466',
+    projectId: 'trendy-83364',
+    storageBucket: 'trendy-83364.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'YOUR-IOS-API-KEY',
-    appId: 'YOUR-IOS-APP-ID',
-    messagingSenderId: 'YOUR-MESSAGING-SENDER-ID',
-    projectId: 'YOUR-PROJECT-ID',
-    storageBucket: 'YOUR-STORAGE-BUCKET',
-    iosBundleId: 'YOUR-IOS-BUNDLE-ID',
+    apiKey: 'AIzaSyBb-0MsyxpID3b8WRAyiDwDlgY19TUETEg',
+    appId: '1:818367989466:ios:your-ios-app-id',
+    messagingSenderId: '818367989466',
+    projectId: 'trendy-83364',
+    storageBucket: 'trendy-83364.firebasestorage.app',
+    iosBundleId: 'com.vibe.trendy',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'YOUR-MACOS-API-KEY',
-    appId: 'YOUR-MACOS-APP-ID',
-    messagingSenderId: 'YOUR-MESSAGING-SENDER-ID',
-    projectId: 'YOUR-PROJECT-ID',
-    storageBucket: 'YOUR-STORAGE-BUCKET',
-    iosBundleId: 'YOUR-MACOS-BUNDLE-ID',
+    apiKey: 'AIzaSyBb-0MsyxpID3b8WRAyiDwDlgY19TUETEg',
+    appId: '1:818367989466:macos:your-macos-app-id',
+    messagingSenderId: '818367989466',
+    projectId: 'trendy-83364',
+    storageBucket: 'trendy-83364.firebasestorage.app',
+    iosBundleId: 'com.vibe.trendy',
   );
 }

@@ -41,6 +41,9 @@ class Post(Base):
     likes = relationship("Like", back_populates="post", cascade="all, delete-orphan")
     comments = relationship("Comment", back_populates="post", cascade="all, delete-orphan")
     ad_impressions = relationship("AdImpression", back_populates="post", cascade="all, delete-orphan")
+    enhanced_post = relationship("EnhancedPost", back_populates="post", cascade="all, delete-orphan", uselist=False)
+    analytics = relationship("PostAnalytics", back_populates="post", cascade="all, delete-orphan", uselist=False)
+    reel = relationship("Reel", back_populates="post", cascade="all, delete-orphan", uselist=False)
     
     def __repr__(self):
         return f"<Post(id={self.id}, user_id={self.user_id}, content={self.content[:50]}...)>"

@@ -12,7 +12,7 @@ from app.database import get_db
 from app.auth.middleware import get_current_user
 from app.services.stripe_service import stripe_service
 from app.models.user import User
-from app.models.subscription import Subscription, Payment
+from app.models.subscription_corrected import Subscription, Payment
 from app.schemas.subscription import SubscriptionResponse, SubscriptionCreate
 from app.schemas.ads import AdImpressionCreate, AdImpressionResponse
 

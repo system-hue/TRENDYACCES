@@ -3,6 +3,7 @@ Firebase Authentication Utilities for TRENDY App
 DEPRECATED - Use app.auth.middleware instead for unified authentication
 """
 
+import os
 import firebase_admin
 from firebase_admin import credentials, auth
 from fastapi import HTTPException, Security, Depends
@@ -11,10 +12,20 @@ from app.core.config import get_settings
 
 settings = get_settings()
 
-# Initialize Firebase Admin
+# Initialize Firebase Admin with error handling for missing credentials
 if not firebase_admin._apps:
-    cred = credentials.Certificate(settings.firebase_credentials_json_path)
-    firebase_admin.initialize_app(cred)
+    try:
+        if settings.firebase_credentials_json_path and os.path.exists(settings.firebase_credentials_json_path):
+            cred = credentials.Certificate(settings.firebase_credentials_json_path)
+            firebase_admin.initialize_app(cred)
+            print("✅ Firebase Admin initialized successfully")
+        else:
+            print("⚠️  Firebase credentials not found. Firebase authentication will be disabled.")
+            # Set a flag to indicate Firebase is not available
+            firebase_available = False
+    except Exception as e:
+        print(f"⚠️  Failed to initialize Firebase: {e}")
+        firebase_available = False
 
 security = HTTPBearer()
 

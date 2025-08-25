@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import List, Optional
 from pydantic import BaseModel
-from app.auth.jwt_handler import get_current_user
+from app.auth.middleware import get_current_user
 
 router = APIRouter(prefix="/shop", tags=["shop"])
 

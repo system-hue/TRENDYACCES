@@ -17,12 +17,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    const HomeScreen(),           // Home
-    const ExploreScreen(),        // Explore (tabs for Music/Movies/Photos/Sports)
-    const CreatePostScreen(),     // Create
-    AIFeaturesScreen(),           // AI Features
-    const InboxScreen(),          // Inbox
-    const ProfileScreen(),        // Profile
+    const HomeScreen(), // Home
+    const ExploreScreen(), // Explore (tabs for Music/Movies/Photos/Sports)
+    const CreatePostScreen(), // Create
+    AIFeaturesScreen(), // AI Features
+    const InboxScreen(), // Inbox
+    const ProfileScreen(), // Profile
   ];
 
   @override

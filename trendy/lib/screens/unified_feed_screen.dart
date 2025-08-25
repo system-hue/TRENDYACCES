@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../services/api_service.dart';
 import '../widgets/post_widget.dart';
 import '../widgets/story_widget.dart';
 import '../widgets/reel_widget.dart';
@@ -48,7 +46,8 @@ class _UnifiedFeedScreenState extends State<UnifiedFeedScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await Provider.of<ApiService>(context, listen: false).refreshPosts();
+          // Refresh logic will be implemented later
+          setState(() {});
         },
         child: CustomScrollView(
           controller: _scrollController,
@@ -61,11 +60,7 @@ class _UnifiedFeedScreenState extends State<UnifiedFeedScreen> {
                   scrollDirection: Axis.horizontal,
                   itemCount: 10,
                   itemBuilder: (context, index) {
-                    return StoryWidget(
-                      userId: index,
-                      username: 'User $index',
-                      isViewed: index % 3 == 0,
-                    );
+                    return StoryWidget(title: 'User $index');
                   },
                 ),
               ),
@@ -90,40 +85,20 @@ class _UnifiedFeedScreenState extends State<UnifiedFeedScreen> {
               ),
             ),
 
-            // Main Feed
-            Consumer<ApiService>(
-              builder: (context, apiService, child) {
-                return FutureBuilder(
-                  future: apiService.getPosts(filter: _selectedFilter),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const SliverFillRemaining(
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    }
-
-                    if (snapshot.hasError) {
-                      return const SliverFillRemaining(
-                        child: Center(child: Text('Error loading posts')),
-                      );
-                    }
-
-                    final posts = snapshot.data ?? [];
-
-                    return SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        final post = posts[index];
-                        return PostWidget(
-                          post: post,
-                          onLike: () => apiService.likePost(post.id),
-                          onComment: () => _showCommentDialog(context, post.id),
-                          onShare: () => _sharePost(post),
-                        );
-                      }, childCount: posts.length),
-                    );
-                  },
-                );
-              },
+            // Main Feed - Using dummy data for now
+            SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final dummyPost = {
+                  'id': index,
+                  'title': 'Post $index',
+                  'content': 'This is a sample post content for post $index',
+                  'type': _selectedFilter,
+                  'likes': index * 10,
+                  'comments': index * 2,
+                  'shares': index,
+                };
+                return PostWidget(post: dummyPost);
+              }, childCount: 20),
             ),
           ],
         ),

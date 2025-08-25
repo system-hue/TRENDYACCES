@@ -4,7 +4,7 @@ from typing import List, Optional, Dict, Any
 import json
 from app.database import get_db
 from app.models import Message, Group, GroupMember, User
-from app.auth.utils import get_current_user
+from app.auth.middleware import get_current_user
 from pydantic import BaseModel
 from datetime import datetime
 
