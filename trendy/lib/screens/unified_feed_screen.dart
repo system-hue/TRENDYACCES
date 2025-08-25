@@ -6,6 +6,8 @@ import '../widgets/story_widget.dart';
 import '../widgets/reel_widget.dart';
 
 class UnifiedFeedScreen extends StatefulWidget {
+  const UnifiedFeedScreen({super.key});
+
   @override
   _UnifiedFeedScreenState createState() => _UnifiedFeedScreenState();
 }
@@ -13,7 +15,7 @@ class UnifiedFeedScreen extends StatefulWidget {
 class _UnifiedFeedScreenState extends State<UnifiedFeedScreen> {
   final ScrollController _scrollController = ScrollController();
   String _selectedFilter = 'all';
-  List<String> _filters = [
+  final List<String> _filters = [
     'all',
     'text',
     'image',
@@ -27,7 +29,7 @@ class _UnifiedFeedScreenState extends State<UnifiedFeedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Trendy Feed'),
+        title: const Text('Trendy Feed'),
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
@@ -53,7 +55,7 @@ class _UnifiedFeedScreenState extends State<UnifiedFeedScreen> {
           slivers: [
             // Stories Section (Instagram-style)
             SliverToBoxAdapter(
-              child: Container(
+              child: SizedBox(
                 height: 120,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
@@ -71,7 +73,7 @@ class _UnifiedFeedScreenState extends State<UnifiedFeedScreen> {
 
             // Reels Section (TikTok-style)
             SliverToBoxAdapter(
-              child: Container(
+              child: SizedBox(
                 height: 200,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
@@ -95,13 +97,13 @@ class _UnifiedFeedScreenState extends State<UnifiedFeedScreen> {
                   future: apiService.getPosts(filter: _selectedFilter),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return SliverFillRemaining(
+                      return const SliverFillRemaining(
                         child: Center(child: CircularProgressIndicator()),
                       );
                     }
 
                     if (snapshot.hasError) {
-                      return SliverFillRemaining(
+                      return const SliverFillRemaining(
                         child: Center(child: Text('Error loading posts')),
                       );
                     }
@@ -128,7 +130,7 @@ class _UnifiedFeedScreenState extends State<UnifiedFeedScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCreatePostDialog(context),
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -138,38 +140,38 @@ class _UnifiedFeedScreenState extends State<UnifiedFeedScreen> {
       context: context,
       builder: (context) {
         return Container(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: Icon(Icons.text_fields),
-                title: Text('Text Post'),
+                leading: const Icon(Icons.text_fields),
+                title: const Text('Text Post'),
                 onTap: () => _createPost(context, 'text'),
               ),
               ListTile(
-                leading: Icon(Icons.image),
-                title: Text('Image Post'),
+                leading: const Icon(Icons.image),
+                title: const Text('Image Post'),
                 onTap: () => _createPost(context, 'image'),
               ),
               ListTile(
-                leading: Icon(Icons.videocam),
-                title: Text('Video Post'),
+                leading: const Icon(Icons.videocam),
+                title: const Text('Video Post'),
                 onTap: () => _createPost(context, 'video'),
               ),
               ListTile(
-                leading: Icon(Icons.music_note),
-                title: Text('Reel'),
+                leading: const Icon(Icons.music_note),
+                title: const Text('Reel'),
                 onTap: () => _createPost(context, 'reel'),
               ),
               ListTile(
-                leading: Icon(Icons.circle),
-                title: Text('Story'),
+                leading: const Icon(Icons.circle),
+                title: const Text('Story'),
                 onTap: () => _createPost(context, 'story'),
               ),
               ListTile(
-                leading: Icon(Icons.chat),
-                title: Text('Tweet'),
+                leading: const Icon(Icons.chat),
+                title: const Text('Tweet'),
                 onTap: () => _createPost(context, 'tweet'),
               ),
             ],
@@ -190,21 +192,21 @@ class _UnifiedFeedScreenState extends State<UnifiedFeedScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Add Comment'),
-          content: TextField(
+          title: const Text('Add Comment'),
+          content: const TextField(
             decoration: InputDecoration(hintText: 'Write your comment...'),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 // Add comment logic
                 Navigator.pop(context);
               },
-              child: Text('Post'),
+              child: const Text('Post'),
             ),
           ],
         );
@@ -216,6 +218,6 @@ class _UnifiedFeedScreenState extends State<UnifiedFeedScreen> {
     // Share post logic
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(SnackBar(content: Text('Post shared successfully!')));
+    ).showSnackBar(const SnackBar(content: Text('Post shared successfully!')));
   }
 }

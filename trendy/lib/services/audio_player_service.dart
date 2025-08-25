@@ -4,8 +4,8 @@ class AudioPlayerService {
   static final AudioPlayer _audioPlayer = AudioPlayer();
   static bool _isPlaying = false;
   static String? _currentTrackUrl;
-  static Duration _duration = Duration.zero;
-  static Duration _position = Duration.zero;
+  static final Duration _duration = Duration.zero;
+  static final Duration _position = Duration.zero;
 
   static AudioPlayer get player => _audioPlayer;
 

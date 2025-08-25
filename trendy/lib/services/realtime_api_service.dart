@@ -43,7 +43,7 @@ class RealtimeApiService {
   }
 
   static Stream<Map<String, dynamic>> getMessageStream() {
-    return _messageController?.stream ?? Stream.empty();
+    return _messageController?.stream ?? const Stream.empty();
   }
 
   static void disconnect() {

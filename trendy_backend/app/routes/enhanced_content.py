@@ -9,13 +9,11 @@ from sqlalchemy import desc, func
 from pydantic import BaseModel
 from typing import List, Optional
 
-from app.database import get_db   # <- fixed import, ensure database.py is inside app/db/
+from app.db.database import get_db
 from app.models.enhanced_post import Music, Movie, FootballMatch
-from app.auth.jwt_handler import get_current_user
+from app.auth.jwt import get_current_user
 
 router = APIRouter(prefix="/content", tags=["enhanced-content"])
-
-# ---------- Response Schemas ----------
 
 class MusicResponse(BaseModel):
     id: int
@@ -60,8 +58,6 @@ class SearchRequest(BaseModel):
     limit: int = 10
     offset: int = 0
 
-# ---------- Music Routes ----------
-
 @router.get("/music/trending", response_model=List[MusicResponse])
 async def get_trending_music(
     limit: int = Query(20, ge=1, le=100),
@@ -69,10 +65,14 @@ async def get_trending_music(
     db: Session = Depends(get_db)
 ):
     """Get trending music with optional genre filtering"""
+    
     query = db.query(Music).filter(Music.is_trending == True)
+    
     if genre:
         query = query.filter(Music.genre.ilike(f"%{genre}%"))
+    
     music = query.order_by(desc(Music.play_count)).limit(limit).all()
+    
     return [
         MusicResponse(
             id=m.id,
@@ -97,14 +97,18 @@ async def search_music(
     db: Session = Depends(get_db)
 ):
     """Search music by title, artist, or album"""
+    
     search_query = db.query(Music).filter(
         func.lower(Music.title).contains(func.lower(query)) |
         func.lower(Music.artist).contains(func.lower(query)) |
         func.lower(Music.album).contains(func.lower(query))
     )
+    
     if genre:
         search_query = search_query.filter(Music.genre.ilike(f"%{genre}%"))
+    
     music = search_query.order_by(desc(Music.play_count)).limit(limit).all()
+    
     return {
         "results": [
             {
@@ -124,8 +128,6 @@ async def search_music(
         "count": len(music)
     }
 
-# ---------- Movie Routes ----------
-
 @router.get("/movies/trending", response_model=List[MovieResponse])
 async def get_trending_movies(
     limit: int = Query(20, ge=1, le=100),
@@ -134,12 +136,17 @@ async def get_trending_movies(
     db: Session = Depends(get_db)
 ):
     """Get trending movies with filtering options"""
+    
     query = db.query(Movie).filter(Movie.is_trending == True)
+    
     if genre:
         query = query.filter(Movie.genre.ilike(f"%{genre}%"))
+    
     if year:
         query = query.filter(Movie.year == year)
+    
     movies = query.order_by(desc(Movie.rating)).limit(limit).all()
+    
     return [
         MovieResponse(
             id=m.id,
@@ -166,16 +173,21 @@ async def search_movies(
     db: Session = Depends(get_db)
 ):
     """Search movies by title, director, or genre"""
+    
     search_query = db.query(Movie).filter(
         func.lower(Movie.title).contains(func.lower(query)) |
         func.lower(Movie.director).contains(func.lower(query)) |
         func.lower(Movie.genre).contains(func.lower(query))
     )
+    
     if genre:
         search_query = search_query.filter(Movie.genre.ilike(f"%{genre}%"))
+    
     if year:
         search_query = search_query.filter(Movie.year == year)
+    
     movies = search_query.order_by(desc(Movie.rating)).limit(limit).all()
+    
     return {
         "results": [
             {
@@ -194,9 +206,7 @@ async def search_movies(
             for m in movies
         ],
         "count": len(movies)
-    }
-
-# ---------- Football Routes ----------
+    ]
 
 @router.get("/football/matches")
 async def get_football_matches(
@@ -207,17 +217,23 @@ async def get_football_matches(
     db: Session = Depends(get_db)
 ):
     """Get football matches with filtering options"""
+    
     query = db.query(FootballMatch)
+    
     if team:
         query = query.filter(
             func.lower(FootballMatch.home_team).contains(func.lower(team)) |
             func.lower(FootballMatch.away_team).contains(func.lower(team))
         )
+    
     if competition:
         query = query.filter(FootballMatch.competition.ilike(f"%{competition}%"))
+    
     if status:
         query = query.filter(FootballMatch.status == status)
+    
     matches = query.order_by(FootballMatch.match_date.desc()).limit(limit).all()
+    
     return {
         "matches": [
             {
@@ -245,11 +261,13 @@ async def search_football_matches(
     db: Session = Depends(get_db)
 ):
     """Search football matches by team or competition"""
+    
     matches = db.query(FootballMatch).filter(
         func.lower(FootballMatch.home_team).contains(func.lower(query)) |
         func.lower(FootballMatch.away_team).contains(func.lower(query)) |
         func.lower(FootballMatch.competition).contains(func.lower(query))
     ).order_by(FootballMatch.match_date.desc()).limit(limit).all()
+    
     return {
         "results": [
             {
@@ -270,17 +288,17 @@ async def search_football_matches(
         "count": len(matches)
     }
 
-# ---------- Single Item Routes ----------
-
 @router.get("/music/{music_id}")
 async def get_music_by_id(
     music_id: int,
     db: Session = Depends(get_db)
 ):
     """Get music details by ID"""
+    
     music = db.query(Music).filter(Music.id == music_id).first()
     if not music:
         raise HTTPException(status_code=404, detail="Music not found")
+    
     return {
         "id": music.id,
         "title": music.title,
@@ -303,9 +321,11 @@ async def get_movie_by_id(
     db: Session = Depends(get_db)
 ):
     """Get movie details by ID"""
+    
     movie = db.query(Movie).filter(Movie.id == movie_id).first()
     if not movie:
         raise HTTPException(status_code=404, detail="Movie not found")
+    
     return {
         "id": movie.id,
         "title": movie.title,
@@ -328,9 +348,11 @@ async def get_football_match_by_id(
     db: Session = Depends(get_db)
 ):
     """Get football match details by ID"""
+    
     match = db.query(FootballMatch).filter(FootballMatch.id == match_id).first()
     if not match:
         raise HTTPException(status_code=404, detail="Match not found")
+    
     return {
         "id": match.id,
         "home_team": match.home_team,

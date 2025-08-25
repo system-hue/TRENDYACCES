@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:trendy/widgets/floating_radial_menu_fixed.dart';
 import 'package:trendy/services/api_service.dart';
 import 'package:trendy/models/user_profile.dart';
 import 'package:trendy/widgets/profile_header.dart';

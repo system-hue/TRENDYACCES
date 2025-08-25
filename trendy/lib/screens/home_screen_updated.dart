@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/backend_service.dart';
-import '../services/enhanced_api_service.dart';
 import '../widgets/post_widget.dart';
 import 'create_post_screen_fixed.dart';
 

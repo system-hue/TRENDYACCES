@@ -37,7 +37,6 @@ class PostResponse(PostBase):
     class Config:
         from_attributes = True
 
-<<<<<<< HEAD
 class PostList(BaseModel):
     posts: List[PostResponse]
     total: int
@@ -48,7 +47,6 @@ class PostDetail(PostResponse):
     user: Dict[str, Any]
     is_liked: bool
     is_bookmarked: bool
-=======
+
 # Alias PostOut to PostResponse for compatibility
 PostOut = PostResponse
->>>>>>> 61615cdf18e3fb0d203f0821029f77ed7e13d0b3

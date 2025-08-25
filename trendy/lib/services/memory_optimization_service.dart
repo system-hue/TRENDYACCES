@@ -33,8 +33,8 @@ class MemoryOptimizationService {
 
     // Trigger garbage collection hint
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      PaintingBinding.instance.imageCache?.clear();
-      PaintingBinding.instance.imageCache?.clearLiveImages();
+      PaintingBinding.instance.imageCache.clear();
+      PaintingBinding.instance.imageCache.clearLiveImages();
     });
   }
 

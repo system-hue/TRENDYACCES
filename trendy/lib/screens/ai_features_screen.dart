@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:trendy/services/api_service.dart';
 
 class AIFeaturesScreen extends StatefulWidget {
+  const AIFeaturesScreen({super.key});
+
   @override
   _AIFeaturesScreenState createState() => _AIFeaturesScreenState();
 }
@@ -184,12 +186,12 @@ class _AIFeaturesScreenState extends State<AIFeaturesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('AI Features'),
+        title: const Text('AI Features'),
         backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -197,32 +199,32 @@ class _AIFeaturesScreenState extends State<AIFeaturesScreen> {
             TextField(
               controller: _textController,
               maxLines: 3,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Enter text for AI processing',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Translation section
             Card(
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Text Translation',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
-                        Text('Target Language:'),
-                        SizedBox(width: 8),
+                        const Text('Target Language:'),
+                        const SizedBox(width: 8),
                         DropdownButton<String>(
                           value: _selectedLanguage,
                           items: _languages.map((lang) {
@@ -237,19 +239,19 @@ class _AIFeaturesScreenState extends State<AIFeaturesScreen> {
                             });
                           },
                         ),
-                        Spacer(),
+                        const Spacer(),
                         ElevatedButton(
                           onPressed: _translateText,
-                          child: Text('Translate'),
+                          child: const Text('Translate'),
                         ),
                       ],
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     if (_isLoading && _translationResult.isEmpty)
-                      CircularProgressIndicator()
+                      const CircularProgressIndicator()
                     else if (_translationResult.isNotEmpty)
                       Container(
-                        padding: EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: Colors.grey[200],
                           borderRadius: BorderRadius.circular(4),
@@ -260,33 +262,33 @@ class _AIFeaturesScreenState extends State<AIFeaturesScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Mood analysis section
             Card(
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Mood Analysis',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     ElevatedButton(
                       onPressed: _analyzeMood,
-                      child: Text('Analyze Mood'),
+                      child: const Text('Analyze Mood'),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     if (_isLoading && _moodResult.isEmpty)
-                      CircularProgressIndicator()
+                      const CircularProgressIndicator()
                     else if (_moodResult.isNotEmpty)
                       Container(
-                        padding: EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: Colors.grey[200],
                           borderRadius: BorderRadius.circular(4),
@@ -297,57 +299,57 @@ class _AIFeaturesScreenState extends State<AIFeaturesScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Smart editing section
             Card(
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Smart Editing',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     ElevatedButton(
                       onPressed: _smartEdit,
-                      child: Text('Auto-Edit Text'),
+                      child: const Text('Auto-Edit Text'),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     if (_isLoading && _editResult.isEmpty)
-                      CircularProgressIndicator()
+                      const CircularProgressIndicator()
                     else if (_editResult.isNotEmpty)
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'Edited Text:',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           Container(
-                            padding: EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: Colors.grey[200],
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(_editResult),
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           if (_editSuggestions.isNotEmpty) ...[
-                            Text(
+                            const Text(
                               'Editing Suggestions:',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             ..._editSuggestions
                                 .map(
                                   (suggestion) => Container(
-                                    padding: EdgeInsets.all(8),
-                                    margin: EdgeInsets.only(top: 4),
+                                    padding: const EdgeInsets.all(8),
+                                    margin: const EdgeInsets.only(top: 4),
                                     decoration: BoxDecoration(
                                       color: Colors.blue[50],
                                       borderRadius: BorderRadius.circular(4),
@@ -355,7 +357,7 @@ class _AIFeaturesScreenState extends State<AIFeaturesScreen> {
                                     child: Text('• $suggestion'),
                                   ),
                                 )
-                                .toList(),
+                                ,
                           ],
                         ],
                       ),
@@ -363,27 +365,27 @@ class _AIFeaturesScreenState extends State<AIFeaturesScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Mood-based feed section
             Card(
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Mood-Based Feed',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
-                        Text('Preferred Mood:'),
-                        SizedBox(width: 8),
+                        const Text('Preferred Mood:'),
+                        const SizedBox(width: 8),
                         DropdownButton<String>(
                           value: _selectedMood,
                           items: _moods.map((mood) {
@@ -398,30 +400,30 @@ class _AIFeaturesScreenState extends State<AIFeaturesScreen> {
                             });
                           },
                         ),
-                        Spacer(),
+                        const Spacer(),
                         ElevatedButton(
                           onPressed: _getMoodFeed,
-                          child: Text('Get Feed'),
+                          child: const Text('Get Feed'),
                         ),
                       ],
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     if (_isLoading && _moodFeed.isEmpty)
-                      CircularProgressIndicator()
+                      const CircularProgressIndicator()
                     else if (_moodFeed.isNotEmpty)
                       Column(
                         children: _moodFeed.map((post) {
                           return Card(
                             child: Padding(
-                              padding: EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(8.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     post['content'],
-                                    style: TextStyle(fontSize: 14),
+                                    style: const TextStyle(fontSize: 14),
                                   ),
-                                  SizedBox(height: 4),
+                                  const SizedBox(height: 4),
                                   Text(
                                     'by ${post['user']['username']} • Mood: ${post['mood']}',
                                     style: TextStyle(
@@ -449,6 +451,6 @@ class _AIFeaturesScreenState extends State<AIFeaturesScreen> {
 // Extension to capitalize first letter of string
 extension StringExtension on String {
   String capitalize() {
-    return "${this[0].toUpperCase()}${this.substring(1)}";
+    return "${this[0].toUpperCase()}${substring(1)}";
   }
 }

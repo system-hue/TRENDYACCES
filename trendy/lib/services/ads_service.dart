@@ -284,12 +284,11 @@ class AdView extends StatelessWidget {
   final Ad ad;
   final double height;
 
-  const AdView({Key? key, required this.ad, this.height = 50})
-    : super(key: key);
+  const AdView({super.key, required this.ad, this.height = 50});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: height,
       child: AdWidget(ad: ad),
     );

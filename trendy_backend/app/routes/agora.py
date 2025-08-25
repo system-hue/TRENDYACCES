@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel
 import os
-from app.auth.utils import verify_token
+from app.auth.middleware import verify_firebase_token
 
 router = APIRouter()
 
@@ -20,9 +20,8 @@ async def generate_agora_token(request: TokenRequest, authorization: str | None 
         # Optional: validate provided bearer token in development
         if authorization and authorization.startswith("Bearer "):
             token = authorization.split(" ", 1)[1]
-            # In dev mode, treat sufficiently long tokens as valid
-            if not verify_token(token):
-                raise HTTPException(status_code=401, detail="Invalid token")
+            # Verify Firebase token
+            await verify_firebase_token(token)
         
         # Import Agora token builder
         from agora_token_builder import RtcTokenBuilder
