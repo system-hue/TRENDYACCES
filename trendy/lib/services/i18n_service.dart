@@ -17,7 +17,7 @@ class I18nService extends ChangeNotifier {
   String get currentRegion => _currentRegion;
   String get currentCurrency => _currentCurrency;
 
-  // Supported languages with RTL support
+  // Supported languages
   static const Map<String, String> supportedLanguages = {
     'en': 'English',
     'sw': 'Swahili',
@@ -30,6 +30,7 @@ class I18nService extends ChangeNotifier {
     'zh': '中文',
   };
 
+  // RTL language codes
   static const List<String> rtlLanguages = ['ar'];
 
   Future<void> initialize() async {
@@ -63,7 +64,6 @@ class I18nService extends ChangeNotifier {
   }
 
   void _updateCurrencyAndFormats() {
-    // Map regions to currencies
     final currencyMap = {
       'US': 'USD',
       'KE': 'KES',
@@ -92,8 +92,8 @@ class I18nService extends ChangeNotifier {
       _localizedStrings = jsonMap.map(
         (key, value) => MapEntry(key, value.toString()),
       );
-    } catch (e) {
-      // Fallback to English if file not found
+    } catch (_) {
+      // fallback to English
       final jsonString = await rootBundle.loadString('assets/i18n/en.json');
       final jsonMap = json.decode(jsonString) as Map<String, dynamic>;
       _localizedStrings = jsonMap.map(
@@ -106,8 +106,8 @@ class I18nService extends ChangeNotifier {
     String text = _localizedStrings[key] ?? key;
 
     if (args != null) {
-      args.forEach((key, value) {
-        text = text.replaceAll('{$key}', value);
+      args.forEach((argKey, value) {
+        text = text.replaceAll('{$argKey}', value);
       });
     }
 
@@ -131,7 +131,7 @@ class I18nService extends ChangeNotifier {
   }
 
   String _getCurrencySymbol() {
-    final symbols = {
+    const symbols = {
       'USD': '\$',
       'EUR': '€',
       'GBP': '£',
@@ -154,6 +154,7 @@ class I18nService extends ChangeNotifier {
   }
 
   TextDirection get textDirection {
-    return isRtl() ? TextDirection.rtl : TextDirection.ltr;
+    // ✅ FIX: Use enum values directly
+    return isRtl() ? TextDirection.RTL : TextDirection.LTR;
   }
 }

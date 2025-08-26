@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:trendy/models/song.dart';
 
 class ApiService {
   static const String baseUrl = 'http://10.0.2.2:8000'; // For Android emulator
@@ -23,6 +24,34 @@ class ApiService {
     }
     return headers;
   }
+
+  // ADD THIS INSIDE ApiService
+
+static Future<List<Song>> getNewReleases() async {
+  try {
+    final uri = Uri.parse('$baseUrl/api/music/new-releases');
+    final response = await http
+        .get(uri, headers: _getHeaders())
+        .timeout(timeoutDuration);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      if (data['songs'] == null) {
+        return [];
+      }
+
+      return (data['songs'] as List)
+          .map((json) => Song.fromJson(json))
+          .toList();
+    } else {
+      throw Exception('Failed to load new releases: ${response.statusCode}');
+    }
+  } catch (e) {
+    throw Exception('Error fetching new releases: $e');
+  }
+}
+
 
   // Movies API
   static Future<Map<String, dynamic>> getMovies({

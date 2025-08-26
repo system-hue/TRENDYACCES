@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId = "com.vibe.trendy" // ✅ Must match Firebase `google-services.json`
-        minSdk = 21 // ✅ Firebase requires at least 21
+        minSdkVersion flutter.minSdkVersion // ✅ Firebase requires at least 21
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

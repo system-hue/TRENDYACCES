@@ -18,19 +18,19 @@ class FeedView extends StatelessWidget {
         if (post.type == PostType.song) {
           final song = post.item as Song;
           return ListTile(
-            title: Text(song.name),
-            subtitle: Text(song.artists.first.name),
-            leading: song.album.imageUrl.isNotEmpty
-                ? Image.network(song.album.imageUrl)
+            title: Text(song.title),
+            subtitle: Text(song.artist),
+            leading: song.imageUrl.isNotEmpty
+                ? Image.network(song.imageUrl)
                 : null,
           );
         } else if (post.type == PostType.movie) {
           final movie = post.item as Movie;
           return ListTile(
             title: Text(movie.title),
-            subtitle: Text(movie.releaseDate),
-            leading: movie.posterPath != null
-                ? Image.network('https://image.tmdb.org/t/p/w200${movie.posterPath}')
+            subtitle: Text(movie.releaseDate as String),
+            leading: movie.imageUrl != null
+                ? Image.network('https://image.tmdb.org/t/p/w200${movie.imageUrl}')
                 : null,
           );
         } else if (post.type == PostType.match) {

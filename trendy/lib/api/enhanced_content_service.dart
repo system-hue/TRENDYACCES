@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class EnhancedContentService {
-  final String baseUrl = "http://your-backend-url.com"; // Replace with actual backend URL
+  final String baseUrl = "http://127.0.0.1:8000"; // Replace with actual backend URL
 
   // ---------------- MUSIC ----------------
 

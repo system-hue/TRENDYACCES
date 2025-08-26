@@ -63,7 +63,7 @@ class _PostCreationScreenState extends State<PostCreationScreen> {
                 children: [
                   const Icon(Icons.music_note),
                   const SizedBox(width: 16),
-                  Text(_selectedSong!.name),
+                  Text(_selectedSong!.title),
                 ],
               ),
             )

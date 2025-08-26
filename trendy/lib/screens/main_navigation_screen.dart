@@ -22,8 +22,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     const CreatePostScreen(), // Create
     AIFeaturesScreen(), // AI Features
     const InboxScreen(), // Inbox
-    const ProfileScreen(), // Profile
-  ];
+    const ProfileScreen(isOwner: true, isVip: true), // Profile
+  ];  
 
   @override
   Widget build(BuildContext context) {

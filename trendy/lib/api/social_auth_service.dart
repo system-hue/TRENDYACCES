@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class SocialAuthService {
-  final String baseUrl = "http://your-backend-url.com"; // Replace with your API base
+  final String baseUrl = "http://127.0.0.1:8000"; // Replace with your API base
 
   // ---------------- Google Auth ----------------
   Future<Map<String, dynamic>> authenticateWithGoogle(String token) async {

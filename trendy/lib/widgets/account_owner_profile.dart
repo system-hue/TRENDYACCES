@@ -13,8 +13,8 @@ class AccountOwnerProfile extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (context) => const ProfileScreen(
-                isOwner: false,
-                isVip: true,
+                isOwner: true, // ✅ Owner profile
+                isVip: true,   // ✅ VIP account
               ),
             ),
           );
@@ -83,36 +83,24 @@ class AccountOwnerProfile extends StatelessWidget {
                   leading: Icon(Icons.control_camera),
                   title: Text('Floating Hub Controls'),
                   children: [
-                    ListTile(
-                      title: Text('Rearrange Hubs'),
-                    ),
-                    ListTile(
-                      title: Text('Hide Hubs'),
-                    ),
+                    ListTile(title: Text('Rearrange Hubs')),
+                    ListTile(title: Text('Hide Hubs')),
                   ],
                 ),
                 const ExpansionTile(
                   leading: Icon(Icons.monetization_on),
                   title: Text('Monetization Tools'),
                   children: [
-                    ListTile(
-                      title: Text('View Earnings'),
-                    ),
-                    ListTile(
-                      title: Text('Manage Premium Vault'),
-                    ),
+                    ListTile(title: Text('View Earnings')),
+                    ListTile(title: Text('Manage Premium Vault')),
                   ],
                 ),
                 const ExpansionTile(
                   leading: Icon(Icons.security),
                   title: Text('Privacy & Security Tools'),
                   children: [
-                    ListTile(
-                      title: Text('Control Visibility'),
-                    ),
-                    ListTile(
-                      title: Text('Lock Profile'),
-                    ),
+                    ListTile(title: Text('Control Visibility')),
+                    ListTile(title: Text('Lock Profile')),
                   ],
                 ),
               ],

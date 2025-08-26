@@ -28,14 +28,14 @@ final List<Post> dummyPosts = [
     ),
     type: PostType.song,
   ),
-  Post(
+    Post(
     item: Movie(
       id: '550',
       title: 'Fight Club',
       description:
           'A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy.',
-      imageUrl: '/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg',
-      backdropPath: '/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg',
+      imageUrl: 'https://image.tmdb.org/t/p/w500/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg',
+      backdropPath: 'https://image.tmdb.org/t/p/w780/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg',
       releaseDate: DateTime.parse('1999-10-15'),
       voteAverage: 8.4,
       genres: ['Drama'],
@@ -45,6 +45,13 @@ final List<Post> dummyPosts = [
       createdAt: DateTime.now(),
       likes: 2000,
       views: 10000,
+      comments: 300, // ✅ Added
+      user: MovieUser(
+        id: 'u2',
+        username: 'davidf',
+        displayName: 'David Fincher',
+        avatarUrl: 'https://upload.wikimedia.org/wikipedia/commons/6/6a/David_Fincher_2011.jpg',
+      ),
     ),
     type: PostType.movie,
   ),

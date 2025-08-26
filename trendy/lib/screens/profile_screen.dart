@@ -6,7 +6,14 @@ import 'package:trendy/widgets/stats_row.dart';
 import 'package:trendy/widgets/tabbed_content_view.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final bool isOwner;
+  final bool isVip;
+
+  const ProfileScreen({
+    super.key,
+    required this.isOwner,
+    required this.isVip,
+  });
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -33,7 +40,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         hasError = false;
       });
 
-      // Fetch profile of demo user (ID 1)
       final response = await ApiService.getUserProfile('1');
       if (!mounted) return;
       setState(() {
@@ -49,7 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           postsCount: response['posts_count'] ?? 89,
           favoritesCount: response['favorites_count'] ?? 234,
           isFollowing: false,
-          isOwnProfile: true,
+          isOwnProfile: widget.isOwner, // ✅ respect isOwner flag
         );
         isLoading = false;
       });
@@ -76,7 +82,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _editProfile() {
-    // Navigate to edit profile screen
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const EditProfileScreen()),
@@ -106,9 +111,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text(widget.isVip ? 'VIP Profile' : 'Profile'),
         actions: [
-          IconButton(icon: const Icon(Icons.settings), onPressed: _editProfile),
+          if (widget.isOwner) // ✅ only show edit if owner
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: _editProfile,
+            ),
         ],
       ),
       body: SingleChildScrollView(
@@ -126,7 +135,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     avatarUrl: userProfile!.avatarUrl,
                     bio: userProfile!.bio,
                     location: userProfile!.location,
-                    followersCount: userProfile!.followersCount + (userProfile!.isFollowing ? -1 : 1),
+                    followersCount: userProfile!.followersCount +
+                        (userProfile!.isFollowing ? -1 : 1),
                     followingCount: userProfile!.followingCount,
                     postsCount: userProfile!.postsCount,
                     favoritesCount: userProfile!.favoritesCount,

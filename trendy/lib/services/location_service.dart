@@ -77,7 +77,7 @@ class LocationService {
     }
   }
 
-  static Future<String> getUserCountry({bool usePreciseLocation = true}) async {
+  static Future<String?> getUserCountry({bool usePreciseLocation = true}) async {
     final prefs = await SharedPreferences.getInstance();
     final cachedData = prefs.getString(_cacheKey);
     final cachedTime = prefs.getInt(_cacheTimeKey);
@@ -91,7 +91,7 @@ class LocationService {
       }
     }
 
-    String country = 'US';
+    String? country = 'US';
 
     if (usePreciseLocation) {
       final position = await getCurrentLocation();

@@ -47,6 +47,7 @@ dependencies:
   logger: ^1.0.0  # Added logger package
   intl: ^0.20.2
   geolocator: ^12.0.0
+  geocoding: ^4.0.0
 
 dev_dependencies:
   flutter_test:

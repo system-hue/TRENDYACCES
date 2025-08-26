@@ -11,7 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'dart:typed_data';
-import '../config/app_config.dart';
+import '../config/app_config.dart'; 
 
 // Fixed Complete Integration Service - Connects all features
 class CompleteIntegrationService {

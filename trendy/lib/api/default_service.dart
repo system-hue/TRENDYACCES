@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class DefaultService {
-  final String baseUrl = "http://your-backend-url.com"; // Replace with your API base URL
+  final String baseUrl = "http://127.0.0.1:8000"; // Replace with your API base URL
 
   // ---------------- AGORA ----------------
 

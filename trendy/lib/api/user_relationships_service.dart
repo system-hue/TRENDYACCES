@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class UserRelationshipsService {
-  final String baseUrl = "http://your-backend-url.com"; // Replace with your backend API
+  final String baseUrl = "http://127.0.0.1:8000"; // Replace with your backend API
 
   // ---------------- Follow User ----------------
   Future<Map<String, dynamic>> followUser({

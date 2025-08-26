@@ -15,7 +15,7 @@ class _MusicLibraryScreenState extends State<MusicLibraryScreen> {
   @override
   void initState() {
     super.initState();
-    _newReleases = ApiService().getNewReleases();
+    _newReleases = ApiService.getNewReleases();
   }
 
   @override
@@ -33,10 +33,10 @@ class _MusicLibraryScreenState extends State<MusicLibraryScreen> {
               itemBuilder: (context, index) {
                 final song = snapshot.data![index];
                 return ListTile(
-                  title: Text(song.name),
-                  subtitle: Text(song.artists.first.name),
-                  leading: song.album.imageUrl.isNotEmpty
-                      ? Image.network(song.album.imageUrl)
+                  title: Text(song.title),
+                  subtitle: Text(song.artist),
+                  leading: song.imageUrl.isNotEmpty
+                      ? Image.network(song.imageUrl)
                       : null,
                   onTap: () {
                     Navigator.pop(context, song);

@@ -4,6 +4,8 @@ class AppConfig {
   static const String _devBaseUrl = 'http://10.0.2.2:8000';
   static const String _stagingBaseUrl = 'https://staging-api.trendyapp.com';
   static const String _prodBaseUrl = 'https://api.trendyapp.com';
+  static const String baseUrl = 'https://api.trendyapp.com';
+
 
   static String get apiBaseUrl {
     switch (appFlavor) {

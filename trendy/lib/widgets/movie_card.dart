@@ -59,7 +59,7 @@ class MovieCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        movie.category,
+                        movie.genres as String,
                         style: const TextStyle(
                           fontSize: 12,
                           color: Colors.blue,
