@@ -5,7 +5,9 @@ Updated User Model for TRENDY App with email verification support
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, JSON, ForeignKey, Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from app.db.base import Base
+from app.database import Base
+from .user_relationships import UserBlock
+from .enhanced_post import Story
 
 class User(Base):
     __tablename__ = "users"

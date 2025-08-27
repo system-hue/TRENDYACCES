@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:trendy/views/chat/chat_screen.dart';
+import 'package:trendy/views/chat/chat_screen_temp.dart';
 
 class ConversationListScreen extends StatelessWidget {
   const ConversationListScreen({super.key});
@@ -7,9 +7,7 @@ class ConversationListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Messages'),
-      ),
+      appBar: AppBar(title: const Text('Messages')),
       body: ListView.builder(
         itemCount: 10,
         itemBuilder: (context, index) {
@@ -22,9 +20,7 @@ class ConversationListScreen extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const ChatScreen(),
-                ),
+                MaterialPageRoute(builder: (context) => const ChatScreen()),
               );
             },
           );

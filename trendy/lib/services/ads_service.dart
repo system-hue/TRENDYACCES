@@ -276,11 +276,11 @@ class AdsService {
   }
 }
 
-class AdWidget extends StatelessWidget {
-  final Ad ad;
+class CustomAdWidget extends StatelessWidget {
+  final BannerAd ad;
   final double height;
 
-  const AdWidget({super.key, required this.ad, this.height = 50});
+  const CustomAdWidget({super.key, required this.ad, this.height = 50});
 
   @override
   Widget build(BuildContext context) {

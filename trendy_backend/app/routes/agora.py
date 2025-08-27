@@ -32,12 +32,12 @@ async def generate_agora_token(request: TokenRequest, authorization: str | None 
         privilege_expired_ts = current_timestamp + expiration_time_in_seconds
         
         # Generate RTC token
-        token = RtcTokenBuilder.build_token_with_uid(
+        token = RtcTokenBuilder.buildTokenWithUid(
             AGORA_APP_ID,
             AGORA_PRIMARY_CERTIFICATE,
             request.channel_name,
             request.uid,
-            RtcTokenBuilder.Role_Publisher,
+            1,  # Role_Publisher = 1
             privilege_expired_ts
         )
         

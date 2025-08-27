@@ -25,20 +25,20 @@ class AppConfig {
 
   // Firebase Configuration
   static String get firebaseApiKey {
-    return isProduction 
+    return isProduction
         ? 'YOUR_PROD_FIREBASE_API_KEY'
-        : isStaging 
-            ? 'YOUR_STAGING_FIREBASE_API_KEY'
-            : 'YOUR_DEV_FIREBASE_API_KEY';
+        : isStaging
+        ? 'YOUR_STAGING_FIREBASE_API_KEY'
+        : 'YOUR_DEV_FIREBASE_API_KEY';
   }
 
   // Agora Configuration
   static String get agoraAppId {
     return isProduction
-        ? 'YOUR_PROD_AGORA_APP_ID'
+        ? 'ead057d4a72448a7afa18dd99f55c5b3'
         : isStaging
-            ? 'YOUR_STAGING_AGORA_APP_ID'
-            : 'YOUR_DEV_AGORA_APP_ID';
+        ? 'ead057d4a72448a7afa18dd99f55c5b3'
+        : 'ead057d4a72448a7afa18dd99f55c5b3';
   }
 
   // AdMob Configuration
@@ -87,11 +87,7 @@ class AppConfig {
   }
 }
 
-enum Flavor {
-  development,
-  staging,
-  production,
-}
+enum Flavor { development, staging, production }
 
 late final Flavor appFlavor;
 

@@ -13,6 +13,9 @@ class Movie {
   final DateTime createdAt;
   final int likes;
   final int views;
+  final String category;
+  final int comments;
+  final Map<String, dynamic> user;
 
   Movie({
     required this.id,
@@ -29,6 +32,9 @@ class Movie {
     required this.createdAt,
     required this.likes,
     required this.views,
+    required this.category,
+    required this.comments,
+    required this.user,
   });
 
   factory Movie.fromJson(Map<String, dynamic> json) {
@@ -51,6 +57,9 @@ class Movie {
       ),
       likes: json['likes'] ?? 0,
       views: json['views'] ?? 0,
+      category: json['category'] ?? 'Movie',
+      comments: json['comments'] ?? 0,
+      user: Map<String, dynamic>.from(json['user'] ?? {}),
     );
   }
 
@@ -70,6 +79,9 @@ class Movie {
       'created_at': createdAt.toIso8601String(),
       'likes': likes,
       'views': views,
+      'category': category,
+      'comments': comments,
+      'user': user,
     };
   }
 }

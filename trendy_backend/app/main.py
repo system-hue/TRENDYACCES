@@ -30,7 +30,8 @@ from .api import (
     ai_features,
     messages,
     groups,
-    shop
+    shop,
+    enhanced_endpoints
 )
 
 # Create all tables
@@ -63,7 +64,7 @@ app.include_router(monetization.router, prefix="/api/v1")
 app.include_router(ads.router, prefix="/api/v1")
 app.include_router(revenue_analytics.router, prefix="/api/v1")
 
-# Include standalone API endpoints
+app.include_router(enhanced_endpoints.router, prefix="/api/v1")
 app.include_router(movies.router)
 app.include_router(music.router)
 app.include_router(football.router)

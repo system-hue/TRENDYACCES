@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:trendy/screens/auth/login_screen.dart';
@@ -37,7 +38,9 @@ Future<void> main() async {
     await AuthStateService().initialize();
 
     // Initialize Ads SDK (non-blocking)
-    unawaited(AdsService.initialize());
+    AdsService.initialize().catchError(
+      (e) => debugPrint('Ads initialization failed: $e'),
+    );
 
     runApp(const MyApp());
   } catch (e) {
