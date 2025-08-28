@@ -83,6 +83,9 @@ async def register_user(
         # Send verification email in background
         background_tasks.add_task(send_verification_email, user.id, user.email)
         
+        # Send welcome email
+        background_tasks.add_task(email_service.send_welcome_email, user.email, user.username)
+        
         # Generate mock token for immediate login
         mock_token = f"mock_token_{user.id}"
         

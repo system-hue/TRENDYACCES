@@ -3,6 +3,7 @@ Apple Sign-In Implementation for TRENDY App
 Fixed version with proper JWT verification
 """
 
+import logging
 import os
 import jwt
 import httpx
@@ -16,6 +17,10 @@ from app.models.social_provider import SocialProvider
 from app.auth.jwt_handler import create_access_token
 from app.auth.utils import get_or_create_user_from_social
 
+# Configure logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 class AppleAuth:
     def __init__(self):
         self.client_id = os.getenv("APPLE_CLIENT_ID", "mock_apple_client_id")
@@ -26,10 +31,12 @@ class AppleAuth:
     async def get_apple_public_keys(self):
         """Get Apple's public keys for JWT verification"""
         try:
+            logger.info("Fetching Apple public keys")
             async with httpx.AsyncClient() as client:
                 response = await client.get("https://appleid.apple.com/auth/keys")
                 return response.json()["keys"]
         except Exception as e:
+            logger.error(f"Failed to fetch Apple public keys: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Failed to fetch Apple public keys: {str(e)}"
@@ -40,6 +47,7 @@ class AppleAuth:
         Verify Apple ID token and return user info using JWT verification
         """
         try:
+            logger.info("Verifying Apple token")
             # Get Apple's public keys
             public_keys = await self.get_apple_public_keys()
             
@@ -55,6 +63,7 @@ class AppleAuth:
                         issuer="https://appleid.apple.com"
                     )
                     
+                    logger.info(f"Apple token verified for user: {decoded.get('email')}")
                     return {
                         "provider_user_id": decoded["sub"],
                         "email": decoded.get("email"),
@@ -66,12 +75,14 @@ class AppleAuth:
                     continue
             
             # If none of the keys worked, the token is invalid
+            logger.warning("Invalid Apple token")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid Apple token"
             )
             
         except Exception as e:
+            logger.error(f"Error verifying Apple token: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error verifying Apple token: {str(e)}"
@@ -86,6 +97,7 @@ class AppleAuth:
         Authenticate user with Apple token and return JWT
         """
         try:
+            logger.info("Authenticating Apple user")
             # Verify Apple token
             apple_user_info = await self.verify_apple_token(token)
             
@@ -99,6 +111,8 @@ class AppleAuth:
                 provider_data=apple_user_info["provider_data"],
                 email_verified=True  # Apple emails are typically verified
             )
+            
+            logger.info(f"User {'created' if is_new_user else 'authenticated'}: {user.email}")
             
             # Create JWT token
             access_token = create_access_token(
@@ -127,6 +141,7 @@ class AppleAuth:
         except HTTPException:
             raise
         except Exception as e:
+            logger.error(f"Error authenticating Apple user: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error authenticating Apple user: {str(e)}"

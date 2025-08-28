@@ -2,10 +2,9 @@
 Facebook OAuth Implementation for TRENDY App
 """
 
-import os
+import logging
 import httpx
-import json
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 from fastapi import HTTPException, status, Depends
 from sqlalchemy.orm import Session
 
@@ -15,6 +14,10 @@ from app.models.social_provider import SocialProvider
 from app.auth.jwt_handler import create_access_token
 from app.auth.utils import get_or_create_user_from_social
 from app.core.config import get_settings
+
+# Configure logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class FacebookAuth:
     def __init__(self):
@@ -35,6 +38,7 @@ class FacebookAuth:
         Verify Facebook access token and return user info
         """
         try:
+            logger.info("Verifying Facebook token")
             # First, debug the token to get app ID and user ID
             debug_url = f"https://graph.facebook.com/debug_token"
             debug_params = {
@@ -47,6 +51,7 @@ class FacebookAuth:
                 debug_data = debug_response.json()
             
             if debug_response.status_code != 200 or "error" in debug_data:
+                logger.warning("Invalid Facebook token")
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Invalid Facebook token"
@@ -54,6 +59,7 @@ class FacebookAuth:
             
             # Verify the token is for our app
             if debug_data["data"]["app_id"] != self.client_id:
+                logger.warning("Token not issued for this application")
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Token not issued for this application"
@@ -72,11 +78,13 @@ class FacebookAuth:
                 user_data = user_response.json()
             
             if user_response.status_code != 200 or "error" in user_data:
+                logger.warning("Failed to fetch Facebook user info")
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Failed to fetch Facebook user info"
                 )
             
+            logger.info(f"Facebook token verified for user: {user_data.get('email')}")
             return {
                 "provider_user_id": user_data["id"],
                 "email": user_data.get("email"),
@@ -86,11 +94,13 @@ class FacebookAuth:
             }
             
         except httpx.RequestError as e:
+            logger.error(f"Network error verifying Facebook token: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Network error verifying Facebook token: {str(e)}"
             )
         except Exception as e:
+            logger.error(f"Error verifying Facebook token: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error verifying Facebook token: {str(e)}"
@@ -101,6 +111,7 @@ class FacebookAuth:
         Exchange authorization code for access token
         """
         try:
+            logger.info("Getting Facebook access token")
             token_url = "https://graph.facebook.com/v19.0/oauth/access_token"
             token_params = {
                 "client_id": self.client_id,
@@ -114,19 +125,23 @@ class FacebookAuth:
                 token_data = response.json()
             
             if response.status_code != 200 or "error" in token_data:
+                logger.warning("Failed to exchange code for access token")
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Failed to exchange code for access token"
                 )
             
+            logger.info("Facebook access token obtained successfully")
             return token_data["access_token"]
             
         except httpx.RequestError as e:
+            logger.error(f"Network error getting Facebook access token: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Network error getting Facebook access token: {str(e)}"
             )
         except Exception as e:
+            logger.error(f"Error getting Facebook access token: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error getting Facebook access token: {str(e)}"
@@ -142,6 +157,7 @@ class FacebookAuth:
         Authenticate user with Facebook OAuth code and return JWT
         """
         try:
+            logger.info("Authenticating Facebook user")
             # Exchange code for access token
             access_token = await self.get_facebook_access_token(code, redirect_uri)
             
@@ -159,6 +175,8 @@ class FacebookAuth:
                 provider_data=facebook_user_info["provider_data"],
                 email_verified=True  # Facebook emails are typically verified
             )
+            
+            logger.info(f"User {'created' if is_new_user else 'authenticated'}: {user.email}")
             
             # Create JWT token
             access_token = create_access_token(
@@ -187,6 +205,7 @@ class FacebookAuth:
         except HTTPException:
             raise
         except Exception as e:
+            logger.error(f"Error authenticating Facebook user: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error authenticating Facebook user: {str(e)}"

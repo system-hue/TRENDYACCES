@@ -2,8 +2,8 @@
 Google OAuth Implementation for TRENDY App
 """
 
-import os
-from typing import Optional, Dict, Any
+import logging
+from typing import Dict, Any
 from fastapi import HTTPException, status, Depends
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
@@ -15,6 +15,10 @@ from app.models.social_provider import SocialProvider
 from app.auth.jwt_handler import create_access_token
 from app.auth.utils import get_or_create_user_from_social
 from app.core.config import get_settings
+
+# Configure logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class GoogleAuth:
     def __init__(self):
@@ -33,6 +37,7 @@ class GoogleAuth:
         Verify Google ID token and return user info
         """
         try:
+            logger.info("Verifying Google token")
             # Verify the token
             id_info = id_token.verify_oauth2_token(
                 token, google_requests.Request(), self.client_id
@@ -40,11 +45,13 @@ class GoogleAuth:
             
             # Check if token is from correct audience
             if id_info['aud'] != self.client_id:
+                logger.warning("Invalid audience in Google token")
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Invalid audience in Google token"
                 )
             
+            logger.info(f"Google token verified for user: {id_info.get('email')}")
             return {
                 "provider_user_id": id_info['sub'],
                 "email": id_info.get('email'),
@@ -55,11 +62,13 @@ class GoogleAuth:
             }
             
         except ValueError as e:
+            logger.error(f"Invalid Google token: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=f"Invalid Google token: {str(e)}"
             )
         except Exception as e:
+            logger.error(f"Error verifying Google token: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error verifying Google token: {str(e)}"
@@ -74,6 +83,7 @@ class GoogleAuth:
         Authenticate user with Google token and return JWT
         """
         try:
+            logger.info("Authenticating Google user")
             # Verify Google token
             google_user_info = await self.verify_google_token(token)
             
@@ -88,6 +98,8 @@ class GoogleAuth:
                 provider_data=google_user_info["provider_data"],
                 email_verified=google_user_info["email_verified"]
             )
+            
+            logger.info(f"User {'created' if is_new_user else 'authenticated'}: {user.email}")
             
             # Create JWT token
             access_token = create_access_token(
@@ -116,6 +128,7 @@ class GoogleAuth:
         except HTTPException:
             raise
         except Exception as e:
+            logger.error(f"Error authenticating Google user: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error authenticating Google user: {str(e)}"
