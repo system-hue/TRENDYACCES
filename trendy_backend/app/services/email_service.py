@@ -10,15 +10,16 @@ from pydantic import EmailStr
 
 class EmailService:
     def __init__(self):
+        # Provide default mock values for development if env vars are missing
         self.conf = ConnectionConfig(
-            MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
-            MAIL_PASSWORD=os.getenv("MAIL_PASSWORD"),
-            MAIL_FROM=os.getenv("MAIL_FROM"),
-            MAIL_PORT=int(os.getenv("MAIL_PORT")),
-            MAIL_SERVER=os.getenv("MAIL_SERVER"),
-            MAIL_FROM_NAME=os.getenv("MAIL_FROM_NAME"),
-            MAIL_TLS=True,
-            MAIL_SSL=False,
+            MAIL_USERNAME=os.getenv("MAIL_USERNAME", "test@example.com"),
+            MAIL_PASSWORD=os.getenv("MAIL_PASSWORD", "password"),
+            MAIL_FROM=os.getenv("MAIL_FROM", "test@example.com"),
+            MAIL_PORT=int(os.getenv("MAIL_PORT") or 25),
+            MAIL_SERVER=os.getenv("MAIL_SERVER", "smtp.example.com"),
+            MAIL_FROM_NAME=os.getenv("MAIL_FROM_NAME", "TRENDY App"),
+            MAIL_STARTTLS=True,
+            MAIL_SSL_TLS=False,
             USE_CREDENTIALS=True,
             VALIDATE_CERTS=True
         )
