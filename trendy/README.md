@@ -1,4 +1,4 @@
-# trendy
+# trendy App
 
 A new Flutter project.
 
